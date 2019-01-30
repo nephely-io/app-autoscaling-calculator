@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="description" content="">
+	<meta name="author" content="">
+
+	<title>Nephely - Cloud scaler</title>
+
+	<!-- Bootstrap core CSS
+	<link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet"> -->
+
+	<!-- Custom fonts for this template -->
+	<link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
+	<link href='https://fonts.googleapis.com/css?family=Kaushan+Script' rel='stylesheet' type='text/css'>
+	<link href='https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+	<link href='https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700' rel='stylesheet' type='text/css'>
+</head>
+<body>
+	<form>
+		T<sub>s</sub>: time for the app to be spawned and routed <input type="text" size="5" id="form-ts" /> seconds<br />
+		T<sub>up</sub>: cluster upscale delay <input type="text" size="5" id="form-tup" /> seconds<br />
+		T<sub>tot</sub>: Total time of the worst case scenario <input type="text" size="5" id="form-ttot" /> seconds<br />
+		Nb<sub>users</sub>: Total number of users considered for this scenario <input type="text" size="5" id="form-ttot" /> users<br />
+		Number of iterations (the higher the more accurate, but the more processing time) <input type="text" size="5" id="form-nb-iterations" /> users<br />
+		<br />
+		Worst case scenario:<br />
+		<select id="form-scenari-1"><option value="until">until</option><option value="until">from</option><option value="until">between</option></select><input type="text" size="5" id="form-from" /><br />
+
+		<br />
+		<input type="button" onclick="Run();" value=" Run! " />
+	</form>
+	<canvas id="chart-loadovertime" width="960" height="500"></canvas>
+	<canvas id="chart-instancesovertime" width="960" height="500"></canvas>
+
+	<!-- JavaScript libraries -->
+	<script src="vendor/momentjs-2.24.0/moment.min.js"></script>
+	<script src="vendor/chartjs-2.7.3/chart.min.js"></script>
+	<script src="js/cloud-scaler.js"></script>
+	<!-- TO BE REMOVED (after merge) -->
+	<script src="js/autoscaler.js"></script>
+	<script src="js/chartdesigner.js"></script>
+	<script src="js/load.js"></script>
+</body>
+</html>
