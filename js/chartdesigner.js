@@ -1,43 +1,11 @@
 
 /* charts designer */
-const ChartsTimeFormat = "HH:mm:ss.SSS";
 class ChartsDesigner {
-	static DrawLoadOverTime(canvasId, coordonates) {
-	// parsing labels and data
-	var data = coordonates.map(e => e.y);
-	var labels = coordonates.map(e => moment(e.x.toChartDuration(), ChartsTimeFormat));
-
-// var ctx = document.getElementById("MeSeStatusCanvas").getContext('2d');
-// var myChart = new Chart(ctx, {
-//    type: 'horizontalBar',
-//    data: {
-//       yLabels: labels,
-//       datasets: [{
-//          label: 'Voltage Fluctuation',
-//          data: data,
-//          borderWidth: 1
-//       }]
-//    },
-//    options: {
-//       scales: {
-//          xAxes: [{
-//             type: 'time',
-//             time: {
-//                unit: 'hour',
-//                displayFormats: {
-//                   hour: 'HH:mm'
-//                },
-//                /* (required to show first bar)
-//                	set min prop, less than the minimum value of data.
-//                	in this case minimum data value is '15:00', so we set '14:00'
-//                 */
-//                min: moment('14:00', 'HH:mm')
-//             }
-//          }]
-//       }
-//    }
-// });
-
+	static DrawLoadOverTime(canvasId, coordonates, nbXAxeCuts) {
+		// parsing labels and data
+		var data = coordonates.map(e => e.y);
+		var labels = coordonates.map(e => moment(e.x.toChartDuration(), ChartsTimeFormat));
+		
 		new Chart(document.getElementById(canvasId).getContext('2d'), {
 			type: 'line',
 			data: {
@@ -118,32 +86,12 @@ class ChartsDesigner {
 						}
 					}]
 				}
-				// scales: {
-				// 	xAxes: [{
-				// 		type: 'time',
-				// 		time: {
-				// 			format: timeFormat,
-				// 			// round: 'day'
-				// 			tooltipFormat: 'll HH:mm'
-				// 		},
-				// 		scaleLabel: {
-				// 			display: true,
-				// 			labelString: 'Date'
-				// 		}
-				// 	}],
-				// 	yAxes: [{
-				// 		scaleLabel: {
-				// 			display: true,
-				// 			labelString: 'value'
-				// 		}
-				// 	}]
-				// }
 			}
 		});
 	}
 }
 
-
+const ChartsTimeFormat = "HH:mm:ss.SSS";
 Number.prototype.toChartDuration = function() {
 	var hours = Math.floor(this / 3600);
 	var minutes = Math.floor((this - (hours * 3600)) / 60);

@@ -2,24 +2,23 @@ function Run() {
 	var loadDuration = 360;
 	var nbUsers = 10000;
 	var instanceMaxLoad = 1;
-	var nbIterations = 1000;
-	var step = 1;
+	var nbIterations = 100000;
+	var nbCoordonates = 360;
+	var nbXAxeCuts = 20;
 
-	var loadFunctionElements = [
-		new UserLoadFunctionPart(Infinity, 0, 0),
+	// load
+	var userLoadFunction = new UserLoadFunction([
+		new UserLoadFunctionPart(-Infinity, 0, 0),
 		new UserLoadFunctionPart(0, 0.8, 0.1),
 		new UserLoadFunctionPart(0.8, 1, 0),
 		new UserLoadFunctionPart(1, 1.8, 0.01),
 		new UserLoadFunctionPart(1.8, Infinity, 0.01)
-	];
+	]);
+	var loadCoordonates = LoadCalculator.Gauss(nbUsers, userLoadFunction, loadDuration, nbCoordonates, nbIterations);
+	console.log(loadCoordonates);
+	ChartsDesigner.DrawLoadOverTime('chart-loadovertime', loadCoordonates, nbXAxeCuts);
 
-	var loadFunction = new UserLoadFunction(loadFunctionElements);
-	var loadCalculator = new LoadCalculator(loadDuration, nbUsers, nbIterations, loadFunction);
-	var loadCoordonates = loadCalculator.getLoadCoordonates(step);
-	var autoScaler = new AutoScaler(loadCoordonates, instanceMaxLoad);
-
-	// drawing charts
-	ChartsDesigner.DrawLoadOverTime('chart-loadovertime', loadCoordonates);
-	ChartsDesigner.DrawNbInstancesOverTime('chart-instancesovertime', autoScaler.getNbInstancesCoordonates());
+	// nb of instance for load RAW
+	ChartsDesigner.DrawNbInstancesOverTime('chart-instancesovertime', AutoScaler.rawNbInstancesForLoadCoordonates(loadCoordonates, instanceMaxLoad));
 }
 
