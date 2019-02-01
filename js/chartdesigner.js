@@ -1,7 +1,7 @@
 
 /* charts designer */
 class ChartsDesigner {
-	static DrawLoadOverTime(canvasId, coordonates, nbXAxeCuts) {
+	static DrawLoadOverTime(canvasId, coordonates) {
 		// parsing labels and data
 		var data = coordonates.map(e => e.y);
 		var labels = coordonates.map(e => moment(e.x.toChartDuration(), ChartsTimeFormat));
@@ -45,6 +45,7 @@ class ChartsDesigner {
 			}
 		});
 	}
+	
 	static DrawNbInstancesOverTime(canvasId, coordonates) {
 		// parsing labels and data
 		var data = coordonates.map(e => e.y);
@@ -84,6 +85,88 @@ class ChartsDesigner {
 						ticks: {
 							source: 'labels'
 						}
+					}]
+				}
+			}
+		});
+	}
+
+	static DrawResults(canvasId, coordonates) {
+		// console.log(coordonates);
+		// parsing labels and data
+		var instancesReadyData = coordonates.map(e => e.instancesReady);
+		var instancesTotalData = coordonates.map(e => e.instancesReady + e.instancesWaiting.length);
+		var instancesLoadPercentData = coordonates.map(e => e.instanceLoadPercent * 100);
+		var labels = coordonates.map(e => moment(e.time.toChartDuration(), ChartsTimeFormat));
+
+		new Chart(document.getElementById(canvasId).getContext('2d'), {
+			type: 'bar',
+			data: {
+				labels: labels,
+				datasets: [{
+					type: 'line',
+					label: 'Instances ready',
+					borderColor: '#20445f',
+					borderWidth: 2,
+					fill: false,
+					yAxisID: 'y-axis-1',
+					data: instancesReadyData
+				},{
+					type: 'line',
+					label: 'Instances total',
+					borderColor: '#aecff0',
+					borderWidth: 2,
+					fill: false,
+					yAxisID: 'y-axis-1',
+					data: instancesTotalData
+				},{
+					type: 'line',
+					label: 'Instances load percent',
+					borderColor: '#e49d23',
+					borderWidth: 2,
+					fill: false,
+					yAxisID: 'y-axis-2',
+					data: instancesLoadPercentData
+				}]
+			},
+			options: {
+				title: {
+					display: true,
+					text: 'Number of instances over time'
+				},
+				tooltips: {
+					mode: 'index',
+					intersect: true
+				},
+				scales: {
+					xAxes: [{
+						type: 'time',
+						time: {
+							unit: 'second',
+							format: ChartsTimeFormat
+						},
+						min: moment('00:00', 'HH:mm'),
+						distribution: 'series',
+						ticks: {
+							source: 'labels'
+						}
+					}],
+					yAxes: [{
+						type: 'linear', // only linear but allow scale type registration. This allows extensions to exist solely for log scale for instance
+						display: true,
+						position: 'left',
+						id: 'y-axis-1',
+						min: 0
+					}, {
+						type: 'linear', // only linear but allow scale type registration. This allows extensions to exist solely for log scale for instance
+						display: true,
+						position: 'right',
+						id: 'y-axis-2',
+						gridLines: {
+							drawOnChartArea: false
+						},
+						min: 0,
+						max: 100
 					}]
 				}
 			}
