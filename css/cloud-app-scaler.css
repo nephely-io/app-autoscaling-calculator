@@ -1,0 +1,221 @@
+/*!
+ * Start Bootstrap - The Big Picture (https://startbootstrap.com/template-overviews/the-big-picture)
+ * Copyright 2013-2019 Start Bootstrap
+ * Licensed under MIT (https://github.com/BlackrockDigital/startbootstrap-the-big-picture/blob/master/LICENSE)
+ */
+
+body {
+	color: #20445f;
+	font-family: 'Roboto Slab', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+	overflow-x: hidden;
+	background-color: #f1f1e6;
+}
+.bg-blue {
+	background-color: #f3faff !important;
+}
+/* titles */
+h1,
+h2,
+h3 {
+	font-weight: 700;
+	font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+}
+h1 {
+	color: #e49d23;
+	font-size: 45px;
+	margin-bottom: 2rem; /* this adds with the row margin */
+}
+h2 {
+	color: #8b7356;
+	margin-bottom: 1.5rem;
+}
+h3 {
+	font-size: 25px;
+	color: #904349;
+	margin-top: 0.85rem;
+	margin-bottom: 0.25rem;
+}
+/* links */
+a {
+	color: #8b7356;
+}
+a:hover {
+	color: #e49d23;
+}
+/* buttons */
+.btn {
+	font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+	font-weight: 700;
+}
+.btn-xl {
+	font-size: 18px;
+	padding: 20px 40px;
+}
+.btn-primary {
+	background-color: #904349;
+	border-color: #904349;
+	color: #f3f2dc;
+}
+.btn-primary:active, .btn-primary:focus, .btn-primary:hover {
+	background-color: #904349 !important;
+	border-color: #904349 !important;
+	color: #8b7356;
+}
+.btn-primary:active, .btn-primary:focus,
+.btn-secondary:active, .btn-secondary:focus {
+	-webkit-box-shadow: 0 0 0 0.2rem rgba(120, 40, 45, 0.5) !important;
+	box-shadow: 0 0 0 0.2rem rgba(118, 39, 44, 0.5) !important;
+}
+.btn-secondary {
+	background-color: #f3f2dc;
+	border-color: #904349;
+	color: #904349;
+}
+.btn-secondary:active, .btn-secondary:focus, .btn-secondary:hover {
+	background-color: #904349 !important;
+	border-color: #904349 !important;
+	color: #f3f2dc;
+}
+/* social buttons */
+ul.social-buttons {
+	margin-top: 0.5rem;
+	margin-bottom: 0.5rem;
+}
+ul.social-buttons li a {
+	display: block;
+	font-size: 23px;
+	line-height: 40px;
+	width: 40px;
+	height: 40px;
+	-webkit-transition: all 0.3s;
+	transition: all 0.3s;
+	border-radius: 100%;
+	outline: none;
+	background-color: #8b7356;
+	color: #f1f1e6;
+	text-align: center;
+}
+ul.social-buttons li a:active, ul.social-buttons li a:focus, ul.social-buttons li a:hover {
+	background-color: #e49d23;
+}
+/* fork me on github */
+img#github-fork {
+	position: absolute;
+	top: 0;
+	right: 0;
+	width: 149px;
+	height: 149px;
+}
+/* header */
+header.masthead {
+	text-align: center;
+	background-image: url("../img/meters.jpg");
+	background-repeat: no-repeat;
+	background-attachment: scroll;
+	background-position: center center;
+	background-size: cover;
+}
+
+header.masthead .introduction {
+	font-size: 20px;
+	padding-bottom: 3rem; /* this adds with the row margin */
+}
+
+header.masthead .introduction a {
+	text-decoration: underline;
+	font-style: italic;
+}
+/* sections */
+section {
+	text-align: center;
+	padding: 4rem 0;
+}
+/* form */
+section#form .form .row {
+	margin-bottom: 5px;
+}
+section#form .from-information {
+	font-style: italic;
+}
+section#form .btn {
+	margin-top: 30px;
+}
+section#form .cloud-provider-information {
+	margin-top: 1rem;
+	margin-bottom: 1rem;
+}
+section#form .kubernetes-1-6,
+section#form .kubernetes-1-12 {
+	display: none;
+}
+/* loading */
+#loading-gif {
+	display: none;
+	padding-bottom: 3rem;
+}
+/* results */
+section#results {
+	display: none;
+}
+section#results .row {
+	margin-bottom: 2rem;
+}
+section#results canvas {
+	position: relative;
+	width: 100%;
+	height: auto;
+	background-color: #ffffff;
+}
+section#results .results_kubernetes-1-12 {
+	display: none;
+}
+section#results label.result-label {
+	font-weight: bold;
+	color: #904349;
+}
+section#results span.result-value {
+	font-weight: bold;
+}
+
+/* credits */
+section#credits {
+	display: flex;
+	color: #f1f1e6;
+	background-color: #20445f;
+	flex-flow: row nowrap;
+	justify-content: flex-start;
+	padding: .5rem 1rem;
+}
+section#credits .container {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+
+	display: -ms-flexbox;
+	-ms-flex-wrap: wrap;
+	-ms-flex-align: center;
+	-ms-flex-pack: justify;
+}
+section#credits .brand {
+	display: inline-block;
+	padding-top: .3125rem;
+	padding-bottom: .3125rem;
+	margin-right: 1rem;
+	font-size: 1.25rem;
+	line-height: inherit;
+	white-space: nowrap;
+}
+section#credits div.social-buttons {
+	display: flex !important;
+	flex-basis: auto;
+}
+section#credits .credits-list {
+	flex-direction: row
+}
+section#credits .brand a {
+	color: #e49d23;
+}
+section#credits .brand a:hover {
+	color: #8b7356;
+}

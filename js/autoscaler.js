@@ -1,31 +1,5 @@
 /* AutoScaler */
 class AutoScaler {
-	static minNbInstancesForLoadCoordonates(loadCoordonates, instanceMaxLoad) {
-		// calculating nb instances
-		var coordonates = [];
-		var oldNbInstances = 0;
-		for (var i=0; i<loadCoordonates.length; i++) {
-			var nbInstances = Math.ceil(loadCoordonates[i].y / instanceMaxLoad);
-			if (nbInstances == oldNbInstances) {
-				continue;
-			}
-			oldNbInstances = nbInstances;
-			coordonates.push({"x": loadCoordonates[i].x, "y": nbInstances});
-		}
-		
-		// adding first point (shouldn't happen if user load function != 0 at t=0)
-		if (coordonates[0].x != 0) {
-			coordonates = [{"x": 0, "y": 0}].concat(coordonates);
-		}
-
-		// adding last point (for graphing purposes)
-		if (coordonates[coordonates.length-1].x != loadCoordonates[loadCoordonates.length-1].x) {
-			coordonates.push({"x": loadCoordonates[loadCoordonates.length-1].x, "y": oldNbInstances});
-		}
-		
-		return coordonates;
-	}
-
 	static findScaleUpPercentKubernetes_1_12(loadCoordonates, instanceMaxLoad, instanceStartDuration, minNbInstances, horizontalPodAutoscalerSyncPeriod, horizontalPodAutoscalerTolerance) {
 		var nbIndexes = Math.ceil(horizontalPodAutoscalerSyncPeriod / loadCoordonates[1].x);
 		return AutoScaler._dichotomy(function(scaleUpPercent) {
@@ -42,52 +16,6 @@ class AutoScaler {
 	}
 
 	// private
-	/*
-	static _createLoadSyncSubsets(loadCoordonates, syncPreriod){
-		var nbIndexes = Math.ceil(syncPreriod / loadCoordonates[1].x);
-		// var subsets = [];
-		var subsets = Array(nbIndexes).fill([]);
-		for (var i=0; i<loadCoordonates.length; i++) {
-			var si = i % nbIndexes;
-			// if (subsets[si] == undefined) {
-			// 	subsets[si] = [];
-			// }
-			subsets[si].push(loadCoordonates[i]);
-		}
-
-		return subsets;
-	}
-
-
-	static _searchHighestLoadGap(loadCoordonates, interval) {
-		var startIndex = -Infinity;
-		var endIndex = -Infinity;
-		var deltaLoad = -Infinity;
-		for (var i=0; i<loadCoordonates.length; i++) {
-			for (var o=i; o<loadCoordonates.length; o++) {
-				if (loadCoordonates[o].x - loadCoordonates[i].x < interval) {
-					continue;
-				}
-				if (loadCoordonates[o].y - loadCoordonates[i].y > deltaLoad) {
-					startIndex = i;
-					endIndex = o;
-					deltaLoad = loadCoordonates[o].y - loadCoordonates[i].y;
-				}
-				break;
-			}
-		}
-		return {
-			"startIndex": startIndex,
-			"endIndex": endIndex,
-			"deltaLoad": deltaLoad,
-			"startLoad": loadCoordonates[startIndex].y,
-			"endLoad": loadCoordonates[endIndex].y,
-			"duration": loadCoordonates[endIndex].x - loadCoordonates[startIndex].x,
-			"startTime": loadCoordonates[startIndex].x,
-			"endTime": loadCoordonates[endIndex].x
-		};
-	} */
-
 	static _dichotomy(checkCallback, min = 0, max = 1, precision = 0.001) {
 		while(max - min > precision) {
 			var current = (max + min) / 2;
@@ -113,7 +41,7 @@ class Kubernetes_1_12 {
 			"time": 0,
 			"instancesReady": nbInstanceStart,
 			"instancesWaiting": [],
-			"instanceLoadPercent": loadCoordonates[0].y / (nbInstanceStart * instanceMaxLoad),
+			"instanceLoadPercent": loadCoordonates[0].y / (nbInstanceStart * instanceMaxLoad)
 		};
 		var status = [lastStatus];
 		var lastSync = -Infinity;
@@ -122,7 +50,7 @@ class Kubernetes_1_12 {
 				"time": loadCoordonates[i].x,
 				"instancesReady": lastStatus.instancesReady,
 				"instancesWaiting": lastStatus.instancesWaiting.slice(0),
-				"instanceLoadPercent": 0,
+				"instanceLoadPercent": 0
 			};
 
 			// checking if instances has started (passed from 'waiting' to 'ready')

@@ -6,39 +6,275 @@
 	<meta name="description" content="">
 	<meta name="author" content="">
 
-	<title>Nephely - Cloud scaler</title>
+	<title>Nephely - Application auto-scaling calculator</title>
 
-	<!-- Bootstrap core CSS
-	<link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet"> -->
+	<link href="vendor/fontawesome-5.7.0/css/all.min.css" rel="stylesheet" type="text/css">
+	<link href="vendor/bootstrap-4.2.1/css/bootstrap.min.css" rel="stylesheet">
+	<link href="css/cloud-app-scaler.css" rel="stylesheet">
 
 	<!-- Custom fonts for this template -->
-	<link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
+	<!-- <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
 	<link href='https://fonts.googleapis.com/css?family=Kaushan+Script' rel='stylesheet' type='text/css'>
-	<link href='https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+	<link href='https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic,700italic' rel='stylesheet' type='text/css'> -->
 	<link href='https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700' rel='stylesheet' type='text/css'>
 </head>
-<body>
-	<form>
-		T<sub>s</sub>: time for the app to be spawned and routed <input type="text" size="5" id="form-ts" /> seconds<br />
-		T<sub>up</sub>: cluster upscale delay <input type="text" size="5" id="form-tup" /> seconds<br />
-		T<sub>tot</sub>: Total time of the worst case scenario <input type="text" size="5" id="form-ttot" /> seconds<br />
-		Nb<sub>users</sub>: Total number of users considered for this scenario <input type="text" size="5" id="form-ttot" /> users<br />
-		Number of iterations (the higher the more accurate, but the more processing time) <input type="text" size="5" id="form-nb-iterations" /> users<br />
-		<br />
-		Worst case scenario:<br />
-		<select id="form-scenari-1"><option value="until">until</option><option value="until">from</option><option value="until">between</option></select><input type="text" size="5" id="form-from" /><br />
+<body onload="OnLoad();">
+	<!-- fork me on github -->
+	<a href="https://github" target="_blank"><img id="github-fork" src="img/fork-github.png" title="Fork me on GitHub" alt="Fork me on GitHub" /></a>
+	
+	<!-- header -->
+	<header class="masthead">
+		<div class="container">
+			<!-- title -->
+			<div class="row">
+				<div class="col-lg-10 text-left">
+					<h1 class="mt-5">Application auto-scaling calculator</h1>
+				</div>
+			</div>
+			<!-- introduction -->
+			<div class="row introduction">
+				<div class="col-lg-12 text-left">
+					<p>This tool helps you configuring your application for auto-scaling inside various cloud providers (only Kubernetes for now). It calculates the load of your application against a 'worst case scenario' and gives you back the key figures for your application auto-scaling configuration.<br />
+					You can find a more detailed description of the problematic and on how this tools works reading the article we published on Medium: <a href="#" target="_blank">How to ‘mathematically’ configure your application (and orchestrator) for auto-scaling</a>.</p>
+				</div>
+			</div>
+		</div>
+	</header>
 
-		<br />
-		<input type="button" onclick="Run();" value=" Run! " />
-	</form>
-	<canvas id="chart-loadovertime" width="960" height="500"></canvas>
-	<canvas id="chart-instancesovertime" width="960" height="500"></canvas>
-	<canvas id="chart-results" width="960" height="500"></canvas>
+	<!-- form -->
+	<section id="form">
+		<div class="container form">
+			<!-- title -->
+			<div class="row">
+				<div class="col-lg-6 text-left">
+					<h2>Hypothesis</h2>
+				</div>
+			</div>
+			<!-- form -->
+			<form class="text-left">
+			<!-- your application -->
+			<div class="row">
+				<div class="col-lg-12">
+					<h3>Your application</h3>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-lg-3">
+					Instance maximal load:
+				</div>
+				<div class="col-lg-2">
+					<input type="text" id="form-instance-max-load" size="15" />
+				</div>
+				<div class="col-lg-7 from-information">
+					The unit has to match your load function
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-lg-3">
+					Instance start duration:
+				</div>
+				<div class="col-lg-2">
+					<input type="number" min="1" step="1" id="form-instance-start-duration" />
+				</div>
+				<div class="col-lg-7 from-information">
+					in seconds
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-lg-3">
+					Minimum number of instances:
+				</div>
+				<div class="col-lg-2">
+					<input type="number" min="1" step="1" id="form-min-number-instances" />
+				</div>
+			</div>
+			<!-- loadtest -->
+			<div class="row">
+				<div class="col-lg-12">
+					<h3>LoadTest</h3>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-lg-3">
+					Number of users:
+				</div>
+				<div class="col-lg-2">
+					<input type="number" min="1" step="1" id="form-number-users" />
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-lg-3">
+					Loadtest duration:
+				</div>
+				<div class="col-lg-2">
+					<input type="number" min="1" step="1" id="form-loadtest-duration" />
+				</div>
+				<div class="col-lg-7 from-information">
+					in seconds
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-lg-3">
+					User distribution function:
+				</div>
+				<div class="col-lg-2">
+					<select id="form-loadtest-distribution">
+						<option value="gauss" selected>Gaussian</option>
+					</select>
+				</div>
+			</div>
+			<!-- cloud provider -->
+			<div class="row">
+				<div class="col-lg-12">
+					<h3>Cloud provider</h3>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-lg-3">
+					Choose your cloud provider:
+				</div>
+				<div class="col-lg-2">
+					<select id="form-cloud-provider" onchange="SelectCloudProvider(this);">
+						<option selected value="null">-- Select --</option>
+						<option value="kubernetes-1.12">Kubernetes (>= 1.12)</option>
+					</select>
+				</div>
+			</div>
+			<div class="row kubernetes-1-12">
+				<div class="col-lg-12 cloud-provider-information from-information">
+					Following information are set on the <a href="https://kubernetes.io/docs/reference/command-line-tools-reference/kube-controller-manager/" target="_blank">kube-controller-manager</a> service.<br />
+					For more information about Kubernetes auto-scaling, please refer to the offcicial <a href="https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/" target="_blank">documentation</a>.
+				</div>
+			</div>
+			<div class="row kubernetes-1-12">
+				<div class="col-lg-4">
+					Horizontal pod autoscaler sync period:
+				</div>
+				<div class="col-lg-2">
+					<input type="number" min="1" step="1" id="form-k8s-1-12-hpasp" value="15" />
+				</div>
+				<div class="col-lg-6 from-information">
+					in seconds (defaults to 15 seconds)
+				</div>
+			</div>
+			<div class="row kubernetes-1-12">
+				<div class="col-lg-4">
+					Horizontal pod autoscaler tolerance:
+				</div>
+				<div class="col-lg-2">
+					<input type="number" min="0" step="0.01" id="form-k8s-1-12-hpat" value="0.1" />
+				</div>
+				<div class="col-lg-6 from-information">
+					in percent (defaults to 0.1%)
+				</div>
+			</div>
+			<div class="row kubernetes-1-12">
+				<div class="col-lg-5">
+					Horizontal pod autoscaler downscale stabilisation period:
+				</div>
+				<div class="col-lg-2">
+					<input type="number" min="1" step="1" id="form-k8s-1-12-hpadsp" value="300" />
+				</div>
+				<div class="col-lg-5 from-information">
+					in seconds (defaults to 5 minutes)
+				</div>
+			</div>
+			<!-- computation & graphics -->
+			<div class="row">
+				<div class="col-lg-12">
+					<h3>Computation</h3>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-lg-3">
+					Number of iterations:
+				</div>
+				<div class="col-lg-2">
+					<input type="number" id="form-number-iterations" min="1000" step="1" value="100000" />
+				</div>
+				<div class="col-lg-7">
+					for the Riemann sum, the higher the more accurate
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-lg-6">
+					<input type="reset" class="btn btn-secondary btn-xl text-uppercase" onclick="setTimeout(ResetForm, 0.01);" value="Reset" />
+				</div>
+				<div class="col-lg-6 text-right">
+					<input type="button" id="form-run" class="btn btn-primary btn-xl text-uppercase" onclick="Run();" value="Run!" />
+				</div>
+			</div>
+			</form>
+			<div class="row" id="loading-gif">
+				<div class="col-lg-12">
+					<img src="img/loading.gif" />
+				</div>
+			</div>
+		</div>
+	</section>
 
-	<!-- JavaScript libraries -->
-	<script src="vendor/momentjs-2.24.0/moment.min.js"></script>
+	<!-- Results -->
+	<section id="results" class="bg-blue">
+		<div class="container">
+			<!-- title -->
+			<div class="row">
+				<div class="col-lg-12 text-left">
+					<h2>Results</h2>
+				</div>
+			</div>
+			<!-- results -->
+			<div class="row">
+				<div class="col-lg-4 text-left">
+					<label class="result-label">Maximum number of instances:</label>&nbsp;<span id="results_max-nb-instance" class="result-value"></span><br />
+					<label class="result-label">Maximum load per instance:</label>&nbsp;<span id="results_max-instance-load" class="result-value"></span><br />
+					<span class="results_kubernetes-1-12"><label class="result-label">targetAverageValue:</label>&nbsp;<span id="results_kubernetes-1-12_targetAverageValue" class="result-value"></span></span>
+				</div>
+				<div class="col-lg-8">
+					<canvas id="chart-load-time"></canvas>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-lg-12">
+					<canvas id="chart-results"></canvas>
+				</div>
+			</div>
+			<!-- back to top -->
+			<div class="row text-center">
+				<div class="col-lg-12">
+					<a class="js-scroll-trigger" href="#form"><i class="fas fa-arrow-circle-up"></i> Back to top</a>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- Credits -->
+	<section id="credits">
+		<div class="container">
+			<span class="brand"><a href="https://www.nephely.io" target="_blank">Nephely</a> - Application auto-scaling calculator</span>
+			<div class="social-buttons">
+				<ul class="credits-list ml-auto list-inline social-buttons">
+					<li class="list-inline-item">
+						<a href="https://github.com/nephely-io" target="_blank"><i class="fas fa-globe"></i></a>
+					</li>
+					<li class="list-inline-item">
+						<a href="https://github.com/nephely-io" target="_blank"><i class="fab fa-github"></i></a>
+					</li>
+					<li class="list-inline-item">
+						<a href="https://github.com/nephely-io" target="_blank"><i class="fab fa-medium"></i></a>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</section>
+	
+	<!-- JavaScript vendor libraries -->
+	<script src="vendor/jquery-3.3.1/jquery.min.js"></script>
+	<script src="vendor/jquery-easing-1.4.1/jquery.easing.min.js"></script>
+	<script src="vendor/bootstrap-4.2.1/js/bootstrap.bundle.min.js"></script>
 	<script src="vendor/chartjs-2.7.3/chart.min.js"></script>
+	<!-- JavaScript -->
 	<script src="js/cloud-scaler.js"></script>
+
 	<!-- TO BE REMOVED (after merge) -->
 	<script src="js/autoscaler.js"></script>
 	<script src="js/chartdesigner.js"></script>

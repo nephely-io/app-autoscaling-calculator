@@ -1,22 +1,18 @@
-
 /* charts designer */
 class ChartsDesigner {
 	static DrawLoadOverTime(canvasId, coordonates) {
-		// parsing labels and data
-		var data = coordonates.map(e => e.y);
-		var labels = coordonates.map(e => moment(e.x.toChartDuration(), ChartsTimeFormat));
-		
 		new Chart(document.getElementById(canvasId).getContext('2d'), {
 			type: 'line',
 			data: {
-				labels: labels,
+				labels: coordonates.map(e => e.x),
 				datasets: [{
 					type: 'line',
 					label: 'Total load',
-					borderColor: '#AFAFAF',
+					borderColor: '#e49d23',
+					backgroundColor: '#e49d23',
 					borderWidth: 2,
 					fill: false,
-					data: data
+					data: coordonates.map(e => Math.round(e.y * 10) / 10)
 				}]
 			},
 			options: {
@@ -24,115 +20,103 @@ class ChartsDesigner {
 					display: true,
 					text: 'Total load over time'
 				},
+				legend: {
+					position: "bottom",
+				},
 				tooltips: {
 					mode: 'index',
 					intersect: true
 				},
 				scales: {
 					xAxes: [{
-						type: 'time',
-						time: {
-							unit: 'second',
-							format: ChartsTimeFormat
+						display: true,
+						scaleLabel: {
+							display: true,
+							labelString: 'Time (seconds)'
 						},
-						min: moment('00:00', 'HH:mm'),
-						distribution: 'series',
-						ticks: {
-							source: 'labels'
-						}
+						min: 0
+					}],
+					yAxes: [{
+						type: 'linear',
+						display: true,
+						scaleLabel: {
+							display: true,
+							labelString: 'Number of instances'
+						},
+						min: 0
 					}]
 				}
 			}
 		});
 	}
 	
-	static DrawNbInstancesOverTime(canvasId, coordonates) {
-		// parsing labels and data
-		var data = coordonates.map(e => e.y);
-		var labels = coordonates.map(e => moment(e.x.toChartDuration(), ChartsTimeFormat));
+	static DrawResults(canvasId, results) {
+		// number of instances
+		var instancesLoadPercentData = results.map(e => Math.round(e.instanceLoadPercent * 1000) / 10);
+		var instancesReadyData = [{"x": results[0].time, "y": results[0].instancesReady}]
+		var instancesTotalData = [{"x": results[0].time, "y": results[0].instancesWaiting.length}]
+		for (var i=1; i<results.length; i++){
+			if ((instancesTotalData[instancesTotalData.length-1].y != results[i].instancesWaiting.length) || (instancesReadyData[instancesReadyData.length-1].y != results[i].instancesReady)) {
+				if (results[i-1].time != instancesTotalData[instancesTotalData.length-1].x) { // adding previous point to have stair curve
+					instancesTotalData.push({"x": results[i-1].time, "y": results[i-1].instancesWaiting.length});
+					instancesReadyData.push({"x": results[i-1].time, "y": results[i-1].instancesReady});
+				}
+				instancesTotalData.push({"x": results[i].time, "y": results[i].instancesWaiting.length});
+				instancesReadyData.push({"x": results[i].time, "y": results[i].instancesReady});
+			}
+		}
+		// adding last point
+		if (instancesReadyData[instancesReadyData.length-1].x != results[results.length-1].time) {
+			instancesTotalData.push({"x": results[results.length-1].time, "y": results[results.length-1].instancesWaiting.length});
+			instancesReadyData.push({"x": results[results.length-1].time, "y": results[results.length-1].instancesReady});
+		}
 
+		// parsing labels
 		new Chart(document.getElementById(canvasId).getContext('2d'), {
 			type: 'line',
 			data: {
-				labels: labels,
-				datasets: [{
-					type: 'line',
-					label: 'Number of instances',
-					borderColor: '#AFAFAF',
-					borderWidth: 2,
-					fill: false,
-					data: data
-				}]
-			},
-			options: {
-				title: {
-					display: true,
-					text: 'Number of instances over time'
-				},
-				tooltips: {
-					mode: 'index',
-					intersect: true
-				},
-				scales: {
-					xAxes: [{
-						type: 'time',
-						time: {
-							unit: 'second',
-							format: ChartsTimeFormat
-						},
-						min: moment('00:00', 'HH:mm'),
-						distribution: 'series',
-						ticks: {
-							source: 'labels'
-						}
-					}]
-				}
-			}
-		});
-	}
-
-	static DrawResults(canvasId, coordonates) {
-		// console.log(coordonates);
-		// parsing labels and data
-		var instancesReadyData = coordonates.map(e => e.instancesReady);
-		var instancesTotalData = coordonates.map(e => e.instancesReady + e.instancesWaiting.length);
-		var instancesLoadPercentData = coordonates.map(e => e.instanceLoadPercent * 100);
-		var labels = coordonates.map(e => moment(e.time.toChartDuration(), ChartsTimeFormat));
-
-		new Chart(document.getElementById(canvasId).getContext('2d'), {
-			type: 'bar',
-			data: {
-				labels: labels,
+				labels: results.map(e => e.time),
 				datasets: [{
 					type: 'line',
 					label: 'Instances ready',
 					borderColor: '#20445f',
+					backgroundColor: '#20445f',
 					borderWidth: 2,
+					yAxisID: 'y-instances',
+					stack: 'nbInstances',
+					lineTension: 0,
 					fill: false,
-					yAxisID: 'y-axis-1',
 					data: instancesReadyData
 				},{
 					type: 'line',
-					label: 'Instances total',
+					label: 'Instances waiting (stacked)',
 					borderColor: '#aecff0',
+					backgroundColor: '#aecff0',
 					borderWidth: 2,
+					yAxisID: 'y-instances',
+					stack: 'nbInstances',
+					lineTension: 0,
 					fill: false,
-					yAxisID: 'y-axis-1',
 					data: instancesTotalData
 				},{
 					type: 'line',
-					label: 'Instances load percent',
+					label: 'Load per instance (right axis)',
 					borderColor: '#e49d23',
+					backgroundColor: '#e49d23',
 					borderWidth: 2,
+					yAxisID: 'y-percent',
+					stack: 'loadInstance',
 					fill: false,
-					yAxisID: 'y-axis-2',
-					data: instancesLoadPercentData
+					data: results.map(e => Math.round(e.instanceLoadPercent * 1000) / 10)
 				}]
 			},
 			options: {
 				title: {
 					display: true,
-					text: 'Number of instances over time'
+					text: 'Number of instances & load per instance over time'
+				},
+				legend: {
+					position: "bottom",
 				},
 				tooltips: {
 					mode: 'index',
@@ -140,30 +124,35 @@ class ChartsDesigner {
 				},
 				scales: {
 					xAxes: [{
-						type: 'time',
-						time: {
-							unit: 'second',
-							format: ChartsTimeFormat
+						display: true,
+						scaleLabel: {
+							display: true,
+							labelString: 'Time (seconds)'
 						},
-						min: moment('00:00', 'HH:mm'),
-						distribution: 'series',
-						ticks: {
-							source: 'labels'
-						}
+						min: 0
 					}],
 					yAxes: [{
-						type: 'linear', // only linear but allow scale type registration. This allows extensions to exist solely for log scale for instance
+						type: 'linear',
 						display: true,
 						position: 'left',
-						id: 'y-axis-1',
+						id: 'y-instances',
+						stacked: true,
+						scaleLabel: {
+							display: true,
+							labelString: 'Number of instances'
+						},
 						min: 0
 					}, {
-						type: 'linear', // only linear but allow scale type registration. This allows extensions to exist solely for log scale for instance
+						type: 'linear',
 						display: true,
 						position: 'right',
-						id: 'y-axis-2',
+						id: 'y-percent',
 						gridLines: {
 							drawOnChartArea: false
+						},
+						scaleLabel: {
+							display: true,
+							labelString: 'Instance load %'
 						},
 						min: 0,
 						max: 100
@@ -174,18 +163,137 @@ class ChartsDesigner {
 	}
 }
 
-const ChartsTimeFormat = "HH:mm:ss.SSS";
-Number.prototype.toChartDuration = function() {
-	var hours = Math.floor(this / 3600);
-	var minutes = Math.floor((this - (hours * 3600)) / 60);
-	var seconds = this - (hours * 3600) - (minutes * 60);
-	var milliseconds = Math.round((this - (hours * 3600) - (minutes * 60) - seconds) * 1000);
+/*
+		var MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+		var config = {
+			type: 'line',
+			data: {
+				labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+				datasets: [{
+					label: 'My First dataset',
+					backgroundColor: window.chartColors.red,
+					borderColor: window.chartColors.red,
+					data: [
+						randomScalingFactor(),
+						randomScalingFactor(),
+						randomScalingFactor(),
+						randomScalingFactor(),
+						randomScalingFactor(),
+						randomScalingFactor(),
+						randomScalingFactor()
+					],
+					fill: false,
+				}, {
+					label: 'My Second dataset',
+					fill: false,
+					backgroundColor: window.chartColors.blue,
+					borderColor: window.chartColors.blue,
+					data: [
+						randomScalingFactor(),
+						randomScalingFactor(),
+						randomScalingFactor(),
+						randomScalingFactor(),
+						randomScalingFactor(),
+						randomScalingFactor(),
+						randomScalingFactor()
+					],
+				}]
+			},
+			options: {
+				responsive: true,
+				title: {
+					display: true,
+					text: 'Chart.js Line Chart'
+				},
+				tooltips: {
+					mode: 'index',
+					intersect: false,
+				},
+				hover: {
+					mode: 'nearest',
+					intersect: true
+				},
+				scales: {
+					xAxes: [{
+						display: true,
+						scaleLabel: {
+							display: true,
+							labelString: 'Month'
+						}
+					}],
+					yAxes: [{
+						display: true,
+						scaleLabel: {
+							display: true,
+							labelString: 'Value'
+						}
+					}]
+				}
+			}
+		};
 
-	if (hours < 10) {hours   = "0"+hours;}
-	if (minutes < 10) {minutes = "0"+minutes;}
-	if (seconds < 10) {seconds = "0"+seconds;}
-	if (milliseconds < 10) {milliseconds = "00"+milliseconds;}
-	else if (milliseconds < 100) {milliseconds = "0"+milliseconds;}
+		window.onload = function() {
+			var ctx = document.getElementById('canvas').getContext('2d');
+			window.myLine = new Chart(ctx, config);
+		};
+
+		document.getElementById('randomizeData').addEventListener('click', function() {
+			config.data.datasets.forEach(function(dataset) {
+				dataset.data = dataset.data.map(function() {
+					return randomScalingFactor();
+				});
+
+			});
+
+			window.myLine.update();
+		});
+
+		var colorNames = Object.keys(window.chartColors);
+		document.getElementById('addDataset').addEventListener('click', function() {
+			var colorName = colorNames[config.data.datasets.length % colorNames.length];
+			var newColor = window.chartColors[colorName];
+			var newDataset = {
+				label: 'Dataset ' + config.data.datasets.length,
+				backgroundColor: newColor,
+				borderColor: newColor,
+				data: [],
+				fill: false
+			};
+
+			for (var index = 0; index < config.data.labels.length; ++index) {
+				newDataset.data.push(randomScalingFactor());
+			}
+
+			config.data.datasets.push(newDataset);
+			window.myLine.update();
+		});
+
+		document.getElementById('addData').addEventListener('click', function() {
+			if (config.data.datasets.length > 0) {
+				var month = MONTHS[config.data.labels.length % MONTHS.length];
+				config.data.labels.push(month);
+
+				config.data.datasets.forEach(function(dataset) {
+					dataset.data.push(randomScalingFactor());
+				});
+
+				window.myLine.update();
+			}
+		});
+
+		document.getElementById('removeDataset').addEventListener('click', function() {
+			config.data.datasets.splice(0, 1);
+			window.myLine.update();
+		});
+
+		document.getElementById('removeData').addEventListener('click', function() {
+			config.data.labels.splice(-1, 1); // remove the label first
+
+			config.data.datasets.forEach(function(dataset) {
+				dataset.data.pop();
+			});
+
+			window.myLine.update();
+		});
 	
-	return hours+':'+minutes+':'+seconds+"."+milliseconds;
-}
+*/
