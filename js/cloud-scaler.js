@@ -114,6 +114,76 @@ function Run() {
 }
 
 /* FORM */
+function LoadFunctionAddRow() {
+	// searching for next row id
+	var rowId = 0;
+	while(true) {
+		if (document.getElementById("form-loadfunction-row" + rowId) == null) {
+			break;
+		}
+		rowId++;
+	}
+	// from to
+	var fromInput = document.createElement("input");
+	fromInput.type = "text";
+	fromInput.size = "10";
+	fromInput.id = "form-loadfunction-from" + rowId;
+	var fromSpan = document.createElement("span");
+	fromSpan.innerHTML = "From: "
+	var fromToSpaceSpan = document.createElement("span");
+	fromToSpaceSpan.innerHTML = "&nbsp;"
+	var toInput = document.createElement("input");
+	toInput.type = "text";
+	toInput.size = "10";
+	toInput.id = "form-loadfunction-to" + rowId;
+	var toSpan = document.createElement("span");
+	toSpan.innerHTML = "To: "
+	var fromTo = document.createElement("div");
+	fromTo.className = "col-lg-4";
+	fromTo.appendChild(fromSpan);
+	fromTo.appendChild(fromInput);
+	fromTo.appendChild(fromToSpaceSpan);
+	fromTo.appendChild(toSpan);
+	fromTo.appendChild(toInput);
+
+	// function label
+	var functionSpan = document.createElement("span");
+	functionSpan.innerHTML = "Function: "
+	var functionSpanCol = document.createElement("div");
+	functionSpanCol.className = "col-lg-1";
+	functionSpanCol.appendChild(functionSpan);
+	// function textarea
+	var functionTextarea = document.createElement("textarea");
+	functionTextarea.className = "form-control";
+	functionTextarea.id = "form-loadfunction-function" + rowId;
+	functionTextarea.innerHTML = "function(time) {return 1;}";
+	var functionCol = document.createElement("div");
+	functionCol.className = "col-lg-6";
+	functionCol.appendChild(functionTextarea);
+
+	// buttons
+	var buttonRemove = document.createElement("input");
+	buttonRemove.type = "button";
+	buttonRemove.className = "btn btn-secondary";
+	buttonRemove.setAttribute("onclick", "RemoveHTML('form-loadfunction-row" + rowId + "');");
+	buttonRemove.value = "-";
+	var buttonsCol = document.createElement("div");
+	buttonsCol.className = "col-lg-1 text-center";
+	buttonsCol.appendChild(buttonRemove);
+
+	// row
+	var row = document.createElement("div");
+	row.className = "row";
+	row.id = "form-loadfunction-row" + rowId;
+	row.appendChild(fromTo);
+	row.appendChild(functionSpanCol);
+	row.appendChild(functionCol);
+	row.appendChild(buttonsCol);
+
+	// displaying HTML
+	document.getElementById("form-loadfunction-rows").appendChild(row);
+}
+
 function SelectCloudProvider(selectElement) {
 	// undisplay every rows
 	["kubernetes-1-12"].forEach(element => {
@@ -143,4 +213,11 @@ function ResetForm() {
 	SelectCloudProvider(document.getElementById("form-cloud-provider"));
 	document.getElementById("loading-gif").style.display = "none";
 	document.getElementById('results').style.display = "none";
+}
+
+/* COMMON */
+function RemoveHTML(id) {
+	var elem = document.getElementById(id);
+	elem.parentNode.removeChild(elem);
+	return false;
 }

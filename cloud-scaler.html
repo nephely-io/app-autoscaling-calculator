@@ -88,6 +88,43 @@
 					<input type="number" min="1" step="1" id="form-min-number-instances" />
 				</div>
 			</div>
+			<!-- load function -->
+			<div class="row">
+				<div class="col-lg-12">
+					<h3>Load function</h3>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-lg-12 information-row">
+					The load function translate the load of a <b>single user</b> over time (in seconds).<br />
+					The time 't=0' correspond to the moment when the user starts rolling load test.<br />
+					The function has to return a value <b>in the same unit as the 'Instance maximal load'</b> metric you filled above.<br />
+					It has to cover a time range from <b>-Infinity</b> to <b>Infinity</b>, without any gap or time overlapping.<br />
+					End times are <b>excluded</b> from the time range (only start times).
+				</div>
+			</div>
+			<div id="form-loadfunction-rows">
+				<div id="form-loadfunction-row0" class="row">
+					<div class="col-lg-4">
+						From: <input type="text" size="10" id="form-loadfunction-from0" value="-Infinity" />
+						To: <input type="text" size="10" id="form-loadfunction-to0" value="Infinity" />
+					</div>
+					<div class="col-lg-1">
+						Function:
+					</div>
+					<div class="col-lg-6">
+						<textarea id="form-loadfunction-function0" class="form-control">function(time) {return 1;}</textarea>
+					</div>
+					<div class="col-lg-1 text-center">
+						<input class="btn btn-secondary" onclick="RemoveHTML('form-loadfunction-row0');" value="-" type="button">
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-lg-12 text-right">
+					<input type="button" class="btn btn-primary" onclick="LoadFunctionAddRow();" value="+" />
+				</div>
+			</div>
 			<!-- loadtest -->
 			<div class="row">
 				<div class="col-lg-12">
@@ -141,9 +178,9 @@
 				</div>
 			</div>
 			<div class="row kubernetes-1-12">
-				<div class="col-lg-12 cloud-provider-information from-information">
+				<div class="col-lg-12 information-row">
 					Following information are set on the <a href="https://kubernetes.io/docs/reference/command-line-tools-reference/kube-controller-manager/" target="_blank">kube-controller-manager</a> service.<br />
-					For more information about Kubernetes auto-scaling, please refer to the offcicial <a href="https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/" target="_blank">documentation</a>.
+					For more information about Kubernetes horizontal pod auto-scaling, please refer to the offcicial <a href="https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/" target="_blank">documentation</a>.
 				</div>
 			</div>
 			<div class="row kubernetes-1-12">
@@ -196,7 +233,7 @@
 					for the Riemann sum, the higher the more accurate
 				</div>
 			</div>
-			<div class="row">
+			<div class="row buttons">
 				<div class="col-lg-6">
 					<input type="reset" class="btn btn-secondary btn-xl text-uppercase" onclick="setTimeout(ResetForm, 0.01);" value="Reset" />
 				</div>
@@ -225,9 +262,9 @@
 			<!-- results -->
 			<div class="row">
 				<div class="col-lg-4 text-left">
+						<span class="results_kubernetes-1-12"><label class="result-label">targetAverageValue:</label>&nbsp;<span id="results_kubernetes-1-12_targetAverageValue" class="result-value"></span></span>
 					<label class="result-label">Maximum number of instances:</label>&nbsp;<span id="results_max-nb-instance" class="result-value"></span><br />
 					<label class="result-label">Maximum load per instance:</label>&nbsp;<span id="results_max-instance-load" class="result-value"></span><br />
-					<span class="results_kubernetes-1-12"><label class="result-label">targetAverageValue:</label>&nbsp;<span id="results_kubernetes-1-12_targetAverageValue" class="result-value"></span></span>
 				</div>
 				<div class="col-lg-8">
 					<canvas id="chart-load-time"></canvas>

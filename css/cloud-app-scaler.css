@@ -54,7 +54,7 @@ a:hover {
 .btn-primary {
 	background-color: #904349;
 	border-color: #904349;
-	color: #f3f2dc;
+	color: #f1f1e6;
 }
 .btn-primary:active, .btn-primary:focus, .btn-primary:hover {
 	background-color: #904349 !important;
@@ -67,14 +67,14 @@ a:hover {
 	box-shadow: 0 0 0 0.2rem rgba(118, 39, 44, 0.5) !important;
 }
 .btn-secondary {
-	background-color: #f3f2dc;
+	background-color: #f1f1e6;
 	border-color: #904349;
 	color: #904349;
 }
 .btn-secondary:active, .btn-secondary:focus, .btn-secondary:hover {
 	background-color: #904349 !important;
 	border-color: #904349 !important;
-	color: #f3f2dc;
+	color: #f1f1e6;
 }
 /* social buttons */
 ul.social-buttons {
@@ -137,16 +137,17 @@ section#form .form .row {
 section#form .from-information {
 	font-style: italic;
 }
-section#form .btn {
-	margin-top: 30px;
-}
-section#form .cloud-provider-information {
+section#form .information-row {
 	margin-top: 1rem;
 	margin-bottom: 1rem;
+	font-style: italic;
 }
 section#form .kubernetes-1-6,
 section#form .kubernetes-1-12 {
 	display: none;
+}
+section#form .buttons .btn {
+	margin-top: 30px;
 }
 /* loading */
 #loading-gif {
