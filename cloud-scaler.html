@@ -104,6 +104,11 @@
 				</div>
 			</div>
 			<div id="form-loadfunction-rows">
+				<div id="form-loadfunction-error-row0" class="row error-row">
+					<div class="col-lg-12">
+						<span id="form-loadfunction-error0"></span>
+					</div>
+				</div>
 				<div id="form-loadfunction-row0" class="row">
 					<div class="col-lg-4">
 						From: <input type="text" size="10" id="form-loadfunction-from0" value="-Infinity" />
@@ -116,7 +121,7 @@
 						<textarea id="form-loadfunction-function0" class="form-control">function(time) {return 1;}</textarea>
 					</div>
 					<div class="col-lg-1 text-center">
-						<input class="btn btn-secondary" onclick="RemoveHTML('form-loadfunction-row0');" value="-" type="button">
+						<input class="btn btn-secondary" onclick="LoadFunctionRemoveRow(0);" value="-" type="button">
 					</div>
 				</div>
 			</div>

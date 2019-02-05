@@ -21,7 +21,6 @@ class LoadCalculator {
 class UserLoadFunction {
 	constructor(parts) {
 		this.parts = parts;
-		// !TODO see if missing gaps (and case 1 element -Infinity to +Infinity)
 	}
 
 	getLoadAt(time) {
@@ -33,17 +32,13 @@ class UserLoadFunction {
 				break;
 			}
 		}
-		if (el.loadFunction != undefined && el.loadFunction != null) {
-			return el.loadFunction(time);
-		}
-		return el.load;
+		return el.loadFunction(time);
 	}
 }
 class UserLoadFunctionPart {
-	constructor(from, to, load, loadFunction) {
+	constructor(from, to, loadFunction) {
 		this.from = from;
 		this.to = to;
-		this.load = load;
 		this.loadFunction = loadFunction;
 	}
 }

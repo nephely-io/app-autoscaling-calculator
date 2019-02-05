@@ -5,7 +5,6 @@ function OnLoad() {
 
 (function($) {
 	"use strict";
-
 	// Smooth scrolling using jQuery easing
 	$('a.js-scroll-trigger[href*="#"]:not([href="#"])').click(function() {
 		if (location.pathname.replace(/^\//, '') == this.pathname.replace(/^\//, '') && location.hostname == this.hostname) {
@@ -25,14 +24,44 @@ function Run() {
 	//displaying loading gif
 	document.getElementById("loading-gif").style.display = "flex";
 
-	// TODO!!!!
-	var userLoadFunction = new UserLoadFunction([
-		new UserLoadFunctionPart(-Infinity, 0, 0),
-		new UserLoadFunctionPart(0, 0.8, 0.1),
-		new UserLoadFunctionPart(0.8, 1, 0),
-		new UserLoadFunctionPart(1, 1.8, 0.01),
-		new UserLoadFunctionPart(1.8, Infinity, 0.01)
-	]);
+	// parsing load function
+	var userLoadFunctionParts = [];
+	for (var i=0; i<=loadFunctionNbRows; i++) {
+		if (document.getElementById("form-loadfunction-row" + i) == null) {
+			continue;
+		}
+		console.log("OK");
+		// hidding error
+		document.getElementById("form-loadfunction-error-row" + i).style.display = "none";
+
+		var from = parseFloat(document.getElementById("form-loadfunction-from" + i).value);
+		if (isNaN(from)) {
+			LoadFunctionError(i, "'From' value is not a number.");
+			return false;
+		}
+		var to = parseFloat(document.getElementById("form-loadfunction-to" + i).value);
+		if (isNaN(to)) {
+			LoadFunctionError(i, "'To' value is not a number.");
+			return false;
+		}
+
+		var loadFunction = null;
+		try {
+			console.log(document.getElementById("form-loadfunction-function" + i).value);
+			eval("loadFunction =  " + document.getElementById("form-loadfunction-function" + i).value);
+			if (typeof loadFunction !== "function") {
+				LoadFunctionError(i, "Load function is not a function.");
+				return false;
+			}
+		} catch(e) {
+			LoadFunctionError(i, "Could parse load function: " + e);
+			return false;
+		}
+
+		userLoadFunctionParts.push(new UserLoadFunctionPart(from, to, loadFunction));
+	}
+	var userLoadFunction = new UserLoadFunction(userLoadFunctionParts);
+	console.log("OKK");
 
 	/* FORM */
 	// application
@@ -114,11 +143,15 @@ function Run() {
 }
 
 /* FORM */
+var loadFunctionNbRows = 0;
 function LoadFunctionAddRow() {
 	// searching for next row id
 	var rowId = 0;
 	while(true) {
 		if (document.getElementById("form-loadfunction-row" + rowId) == null) {
+			if (loadFunctionNbRows < rowId) {
+				loadFunctionNbRows = rowId;
+			}
 			break;
 		}
 		rowId++;
@@ -165,7 +198,7 @@ function LoadFunctionAddRow() {
 	var buttonRemove = document.createElement("input");
 	buttonRemove.type = "button";
 	buttonRemove.className = "btn btn-secondary";
-	buttonRemove.setAttribute("onclick", "RemoveHTML('form-loadfunction-row" + rowId + "');");
+	buttonRemove.setAttribute("onclick", "LoadFunctionRemoveRow(" + rowId + ");");
 	buttonRemove.value = "-";
 	var buttonsCol = document.createElement("div");
 	buttonsCol.className = "col-lg-1 text-center";
@@ -180,8 +213,32 @@ function LoadFunctionAddRow() {
 	row.appendChild(functionCol);
 	row.appendChild(buttonsCol);
 
+	// error row
+	var errorSpan = document.createElement("span");
+	errorSpan.id = "form-loadfunction-error" + rowId;
+	var errorDiv = document.createElement("div");
+	errorDiv.className = "col-lg-12";
+	errorDiv.appendChild(errorSpan)
+	var errorRow = document.createElement("div");
+	errorRow.id = "form-loadfunction-error-row" + rowId;
+	errorRow.className = "row error-row";
+	errorRow.appendChild(errorDiv);
+
 	// displaying HTML
+	document.getElementById("form-loadfunction-rows").appendChild(errorRow);
 	document.getElementById("form-loadfunction-rows").appendChild(row);
+}
+
+function LoadFunctionRemoveRow(rowIndex) {
+	RemoveHTML('form-loadfunction-error-row' + rowIndex);
+	RemoveHTML('form-loadfunction-row' + rowIndex);
+}
+
+function LoadFunctionError(rowIndex, error) {
+	document.getElementById("form-loadfunction-error" + rowIndex).innerHTML = "&darr; " + error;
+	document.getElementById("form-loadfunction-error-row" + rowIndex).style.display = "flex";
+	//displaying loading gif
+	document.getElementById("loading-gif").style.display = "none";
 }
 
 function SelectCloudProvider(selectElement) {
