@@ -4,8 +4,8 @@ class LoadCalculator {
 		var coordonates = [];
 		var const1 = nbUsers * 6 / (Math.sqrt(2 * Math.PI) * nbIterations);
 		for (var i=0; i<=nbCoordonates; i++) {
-			var load = 0;
 			var t = i * duration / nbCoordonates
+			var load = userLoadFunction.getLoadAt(t)
 			for (var k=1; k<=nbIterations; k++) {
 				load += userLoadFunction.getLoadAt(t - k / nbIterations * duration) * Math.exp(-9 / 2 * Math.pow((2 * k - nbIterations) / nbIterations, 2));
 			}
@@ -17,9 +17,9 @@ class LoadCalculator {
 	static Constant(nbUsers, userLoadFunction, duration, nbCoordonates, nbIterations) {
 		var coordonates = [];
 		var const1 = nbUsers / nbIterations;
-		for (var i=0; i<=nbCoordonates; i++) {
-			var load = 0;
+		for (var i=0; i<=nbCoordonates; i++) {;
 			var t = i * duration / nbCoordonates
+			var load = userLoadFunction.getLoadAt(t)
 			for (var k=1; k<=nbIterations; k++) {
 				load += userLoadFunction.getLoadAt(t - k / nbIterations * duration);
 			}
@@ -32,8 +32,8 @@ class LoadCalculator {
 		var coordonates = [];
 		var const1 = 2 * nbUsers / Math.pow(nbIterations, 2);
 		for (var i=0; i<=nbCoordonates; i++) {
-			var load = 0;
 			var t = i * duration / nbCoordonates
+			var load = userLoadFunction.getLoadAt(t)
 			for (var k=1; k<=nbIterations; k++) {
 				load += k * userLoadFunction.getLoadAt(t - k / nbIterations * duration);
 			}

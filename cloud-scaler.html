@@ -27,13 +27,13 @@
 		<div class="container">
 			<!-- title -->
 			<div class="row">
-				<div class="col-lg-10 text-left">
+				<div class="col-lg-10">
 					<h1 class="mt-5">Application auto-scaling calculator</h1>
 				</div>
 			</div>
 			<!-- introduction -->
 			<div class="row introduction">
-				<div class="col-lg-12 text-left">
+				<div class="col-lg-12">
 					<p>This tool helps you configuring your application for auto-scaling inside various cloud providers (only Kubernetes for now). It calculates the load of your application against a 'worst case scenario' and gives you back the key figures for your application auto-scaling configuration.<br />
 					You can find a more detailed description of the problematic and on how this tools works reading the article we published on Medium: <a href="#" target="_blank">How to ‘mathematically’ configure your application (and orchestrator) for auto-scaling</a>.</p>
 				</div>
@@ -46,12 +46,12 @@
 		<div class="container form">
 			<!-- title -->
 			<div class="row">
-				<div class="col-lg-6 text-left">
+				<div class="col-lg-6">
 					<h2>Hypothesis</h2>
 				</div>
 			</div>
 			<!-- form -->
-			<form class="text-left">
+			<form>
 			<!-- your application -->
 			<div class="row">
 				<div class="col-lg-12">
@@ -262,12 +262,12 @@
 		<div class="container">
 				<!-- results -->
 			<div class="row">
-				<div class="col-lg-12 text-left">
+				<div class="col-lg-12">
 					<h2>Results</h2>
 				</div>
 			</div>
 			<div class="row">
-				<div class="col-lg-4 text-left">
+				<div class="col-lg-4">
 					<span class="results_kubernetes-1-12"><label class="result-label">targetAverageValue:</label>&nbsp;<span id="results_kubernetes-1-12_targetAverageValue" class="result-value"></span></span>
 					<label class="result-label">Maximum number of instances:</label>&nbsp;<span id="results_max-nb-instance" class="result-value"></span><br />
 					<label class="result-label">Maximum load per instance:</label>&nbsp;<span id="results_max-instance-load" class="result-value"></span><br />
@@ -283,12 +283,21 @@
 			</div>
 			<!-- How to interpret -->
 			<div class="row">
-				<div class="col-lg-12 text-left">
+				<div class="col-lg-12">
 					<h2>How to interpret results?</h2>
 				</div>
 			</div>
 			<div class="row">
 				<div class="col-lg-12">
+					<p class="results_kubernetes-1-12"><label class="result-label">targetAverageValue:</label> <b>This value should be between 0.6 and 0.8.</b><br />
+						If this value is below 0.6 it eather means that the load test scenario is too constrictive or you should increase you minimum number of instances. If can't get to increase this value, you think about increase the resources given to each instance of work on your application performances.<br />
+						If this value is above 0.8 it eather means that the load test scenario is not enough constrictive or that you just have the best application ever!
+					</p>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-lg-12">
+					<span class="result-value"><i class="fas fa-exclamation-triangle warning"></i> We remind you that all those test do not take into account the time to spawn new isntances</span>
 				</div>
 			</div>
 			<!-- back to top -->

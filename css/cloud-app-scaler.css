@@ -13,6 +13,9 @@ body {
 .bg-blue {
 	background-color: #f3faff !important;
 }
+.warning {
+	color: #e49d23;
+}
 /* titles */
 h1,
 h2,
@@ -108,7 +111,6 @@ img#github-fork {
 }
 /* header */
 header.masthead {
-	text-align: center;
 	background-image: url("../img/meters.jpg");
 	background-repeat: no-repeat;
 	background-attachment: scroll;
@@ -125,12 +127,10 @@ header.masthead .introduction a {
 	text-decoration: underline;
 	font-style: italic;
 }
-/* sections */
-section {
-	text-align: center;
+/* form */
+section#form {
 	padding: 4rem 0;
 }
-/* form */
 section#form .form .row {
 	margin-bottom: 5px;
 }
@@ -163,6 +163,7 @@ section#form .buttons .btn {
 /* results */
 section#results {
 	display: none;
+	padding: 4rem 0 1rem 0;
 }
 section#results .row {
 	margin-bottom: 2rem;

@@ -25,6 +25,14 @@ function Run() {
 	document.getElementById('results').style.display = "none";
 	document.getElementById("loading-gif").style.display = "flex";
 
+	// removing old graphs
+	if (rowsClass != null) {
+		var rows = document.getElementsByClassName("chartjs-size-monitor");
+		for (var i=0; i<rows.length; i++) {
+			rows[i].parentNode.removeChild(rows[i]);
+		}
+	}
+	
 	// parsing load function
 	var userLoadFunctionParts = [];
 	for (var i=0; i<=loadFunctionNbRows; i++) {
@@ -65,9 +73,10 @@ function Run() {
 		new UserLoadFunctionPart(0, 0.8, function(time){return 0.1;}),
 		new UserLoadFunctionPart(0.8, 1, function(time){return 0;}),
 		new UserLoadFunctionPart(1, 1.8, function(time){return 0.1;}),
-		new UserLoadFunctionPart(1.8, 2, function(time){return 0;}),
-		new UserLoadFunctionPart(2, Infinity, function(time){return 0.01;})
+		new UserLoadFunctionPart(1.8, Infinity, function(time){return 0;}),
+		// new UserLoadFunctionPart(2, Infinity, function(time){return 0.01;})
 	]);
+	console.log(userLoadFunction.getLoadAt(0));
 
 	/* FORM */
 	// application
@@ -96,6 +105,7 @@ function Run() {
 			console.log("Linear");
 			break;
 	}
+	console.log(loadCoordonates);
 	// displaying load chart
 	ChartsDesigner.DrawLoadOverTime('chart-load-time', loadCoordonates);
 
