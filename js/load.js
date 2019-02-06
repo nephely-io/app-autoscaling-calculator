@@ -2,20 +2,46 @@
 class LoadCalculator {
 	static Gauss(nbUsers, userLoadFunction, duration, nbCoordonates, nbIterations) {
 		var coordonates = [];
+		var const1 = nbUsers * 6 / (Math.sqrt(2 * Math.PI) * nbIterations);
 		for (var i=0; i<=nbCoordonates; i++) {
 			var load = 0;
 			var t = i * duration / nbCoordonates
 			for (var k=1; k<=nbIterations; k++) {
-				var timeLoad = t - k / nbIterations * duration;
-				var userLoad = userLoadFunction.getLoadAt(timeLoad);
-				load += userLoad * 6 / (Math.sqrt(2 * Math.PI) * nbIterations) * Math.exp(-9 / 2 * Math.pow((2 * k - nbIterations) / nbIterations, 2));
+				load += userLoadFunction.getLoadAt(t - k / nbIterations * duration) * Math.exp(-9 / 2 * Math.pow((2 * k - nbIterations) / nbIterations, 2));
 			}
-			coordonates.push({"x": t, "y": nbUsers * load});
+			coordonates.push({"x": t, "y": const1 * load});
+		}
+		return coordonates;
+	}
+
+	static Constant(nbUsers, userLoadFunction, duration, nbCoordonates, nbIterations) {
+		var coordonates = [];
+		var const1 = nbUsers / nbIterations;
+		for (var i=0; i<=nbCoordonates; i++) {
+			var load = 0;
+			var t = i * duration / nbCoordonates
+			for (var k=1; k<=nbIterations; k++) {
+				load += userLoadFunction.getLoadAt(t - k / nbIterations * duration);
+			}
+			coordonates.push({"x": t, "y": const1 * load});
+		}
+		return coordonates;
+	}
+
+	static Linear(nbUsers, userLoadFunction, duration, nbCoordonates, nbIterations) {
+		var coordonates = [];
+		var const1 = 2 * nbUsers / Math.pow(nbIterations, 2);
+		for (var i=0; i<=nbCoordonates; i++) {
+			var load = 0;
+			var t = i * duration / nbCoordonates
+			for (var k=1; k<=nbIterations; k++) {
+				load += k * userLoadFunction.getLoadAt(t - k / nbIterations * duration);
+			}
+			coordonates.push({"x": t, "y": const1 * load});
 		}
 		return coordonates;
 	}
 }
-
 
 /* UserLoadFunction */
 class UserLoadFunction {

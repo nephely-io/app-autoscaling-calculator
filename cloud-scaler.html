@@ -162,6 +162,8 @@
 				<div class="col-lg-2">
 					<select id="form-loadtest-distribution">
 						<option value="gauss" selected>Gaussian</option>
+						<option value="constant">Constant</option>
+						<option value="linear">Linear</option>
 					</select>
 				</div>
 			</div>
@@ -258,16 +260,15 @@
 	<!-- Results -->
 	<section id="results" class="bg-blue">
 		<div class="container">
-			<!-- title -->
+				<!-- results -->
 			<div class="row">
 				<div class="col-lg-12 text-left">
 					<h2>Results</h2>
 				</div>
 			</div>
-			<!-- results -->
 			<div class="row">
 				<div class="col-lg-4 text-left">
-						<span class="results_kubernetes-1-12"><label class="result-label">targetAverageValue:</label>&nbsp;<span id="results_kubernetes-1-12_targetAverageValue" class="result-value"></span></span>
+					<span class="results_kubernetes-1-12"><label class="result-label">targetAverageValue:</label>&nbsp;<span id="results_kubernetes-1-12_targetAverageValue" class="result-value"></span></span>
 					<label class="result-label">Maximum number of instances:</label>&nbsp;<span id="results_max-nb-instance" class="result-value"></span><br />
 					<label class="result-label">Maximum load per instance:</label>&nbsp;<span id="results_max-instance-load" class="result-value"></span><br />
 				</div>
@@ -278,6 +279,16 @@
 			<div class="row">
 				<div class="col-lg-12">
 					<canvas id="chart-results"></canvas>
+				</div>
+			</div>
+			<!-- How to interpret -->
+			<div class="row">
+				<div class="col-lg-12 text-left">
+					<h2>How to interpret results?</h2>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-lg-12">
 				</div>
 			</div>
 			<!-- back to top -->

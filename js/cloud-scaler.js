@@ -21,7 +21,8 @@ function OnLoad() {
 })(jQuery);
 
 function Run() {
-	//displaying loading gif
+	// hiding results & displaying loading gif
+	document.getElementById('results').style.display = "none";
 	document.getElementById("loading-gif").style.display = "flex";
 
 	// parsing load function
@@ -30,7 +31,6 @@ function Run() {
 		if (document.getElementById("form-loadfunction-row" + i) == null) {
 			continue;
 		}
-		console.log("OK");
 		// hidding error
 		document.getElementById("form-loadfunction-error-row" + i).style.display = "none";
 
@@ -47,7 +47,6 @@ function Run() {
 
 		var loadFunction = null;
 		try {
-			console.log(document.getElementById("form-loadfunction-function" + i).value);
 			eval("loadFunction =  " + document.getElementById("form-loadfunction-function" + i).value);
 			if (typeof loadFunction !== "function") {
 				LoadFunctionError(i, "Load function is not a function.");
@@ -60,8 +59,15 @@ function Run() {
 
 		userLoadFunctionParts.push(new UserLoadFunctionPart(from, to, loadFunction));
 	}
-	var userLoadFunction = new UserLoadFunction(userLoadFunctionParts);
-	console.log("OKK");
+	// var userLoadFunction = new UserLoadFunction(userLoadFunctionParts);
+	var userLoadFunction = new UserLoadFunction([
+		new UserLoadFunctionPart(-Infinity, 0, function(time){return 0;}),
+		new UserLoadFunctionPart(0, 0.8, function(time){return 0.1;}),
+		new UserLoadFunctionPart(0.8, 1, function(time){return 0;}),
+		new UserLoadFunctionPart(1, 1.8, function(time){return 0.1;}),
+		new UserLoadFunctionPart(1.8, 2, function(time){return 0;}),
+		new UserLoadFunctionPart(2, Infinity, function(time){return 0.01;})
+	]);
 
 	/* FORM */
 	// application
@@ -73,7 +79,7 @@ function Run() {
 	var loadDuration = parseInt(document.getElementById("form-loadtest-duration").value);
 	// computation & graphics
 	var nbIterations = parseInt(document.getElementById("form-number-iterations").value);
-	var nbCoordonates = Math.ceil(loadDuration / 3); // !!TODO
+	var nbCoordonates = Math.ceil(loadDuration); // !!TODO
 
 	/* COMPUTING */
 	// calculating load
@@ -81,6 +87,13 @@ function Run() {
 	switch(document.getElementById("form-loadtest-distribution").value) {
 		case "gauss":
 			loadCoordonates = LoadCalculator.Gauss(nbUsers, userLoadFunction, loadDuration, nbCoordonates, nbIterations);
+			break;
+		case "constant":
+			loadCoordonates = LoadCalculator.Constant(nbUsers, userLoadFunction, loadDuration, nbCoordonates, nbIterations);
+			break;
+		case "linear":
+			loadCoordonates = LoadCalculator.Linear(nbUsers, userLoadFunction, loadDuration, nbCoordonates, nbIterations);
+			console.log("Linear");
 			break;
 	}
 	// displaying load chart
