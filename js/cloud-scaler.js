@@ -22,6 +22,7 @@ function OnLoad() {
 
 function Run() {
 	// hiding results & displaying loading gif
+	document.getElementById('form-error').style.display = "none";
 	document.getElementById('results').style.display = "none";
 	document.getElementById("loading-gif").style.display = "flex";
 
@@ -34,7 +35,8 @@ function Run() {
 	}
 	
 	// parsing load function
-	var userLoadFunctionParts = [];
+	var loadFunctions = [];
+	var totalPercent = 0;
 	for (var i=0; i<=loadFunctionNbRows; i++) {
 		if (document.getElementById("form-loadfunction-row" + i) == null) {
 			continue;
@@ -42,40 +44,26 @@ function Run() {
 		// hidding error
 		document.getElementById("form-loadfunction-error-row" + i).style.display = "none";
 
-		var from = parseFloat(document.getElementById("form-loadfunction-from" + i).value);
-		if (isNaN(from)) {
-			LoadFunctionError(i, "'From' value is not a number.");
-			return false;
-		}
-		var to = parseFloat(document.getElementById("form-loadfunction-to" + i).value);
-		if (isNaN(to)) {
-			LoadFunctionError(i, "'To' value is not a number.");
-			return false;
-		}
-
 		var loadFunction = null;
 		try {
 			eval("loadFunction =  " + document.getElementById("form-loadfunction-function" + i).value);
 			if (typeof loadFunction !== "function") {
 				LoadFunctionError(i, "Load function is not a function.");
-				return false;
+				return FormError("Error with load function (see above)");
 			}
 		} catch(e) {
 			LoadFunctionError(i, "Could parse load function: " + e);
-			return false;
+			return FormError("Error with load function (see above)");
 		}
+		var userPercent = parseFloat(document.getElementById("form-loadfunction-user-percent" + i).value);
 
-		userLoadFunctionParts.push(new UserLoadFunctionPart(from, to, loadFunction));
+		totalPercent += userPercent;
+		loadFunctions.push({"percent": userPercent / 100, "func": loadFunction});
 	}
-	// var userLoadFunction = new UserLoadFunction(userLoadFunctionParts);
-	var userLoadFunction = new UserLoadFunction([
-		new UserLoadFunctionPart(-Infinity, 0, function(time){return 0;}),
-		new UserLoadFunctionPart(0, 0.8, function(time){return 0.1;}),
-		new UserLoadFunctionPart(0.8, 1, function(time){return 0;}),
-		new UserLoadFunctionPart(1, 1.8, function(time){return 0.1;}),
-		new UserLoadFunctionPart(1.8, Infinity, function(time){return 0;}),
-		// new UserLoadFunctionPart(2, Infinity, function(time){return 0.01;})
-	]);
+	if (totalPercent != 100) {
+		return FormError("Load functions user percent total is not 100%.");
+	}
+	var userLoadFunction = new UserLoadFunction(loadFunctions);
 
 	/* FORM */
 	// application
@@ -87,7 +75,7 @@ function Run() {
 	var loadDuration = parseInt(document.getElementById("form-loadtest-duration").value);
 	// computation & graphics
 	var nbIterations = parseInt(document.getElementById("form-number-iterations").value);
-	var nbCoordonates = Math.ceil(loadDuration); // !!TODO
+	var nbCoordonates = Math.ceil(loadDuration * parseInt(document.getElementById("form-number-point-second").value));
 
 	/* COMPUTING */
 	// calculating load
@@ -101,7 +89,6 @@ function Run() {
 			break;
 		case "linear":
 			loadCoordonates = LoadCalculator.Linear(nbUsers, userLoadFunction, loadDuration, nbCoordonates, nbIterations);
-			console.log("Linear");
 			break;
 	}
 	// displaying load chart
@@ -177,40 +164,36 @@ function LoadFunctionAddRow() {
 		}
 		rowId++;
 	}
-	// from to
-	var fromInput = document.createElement("input");
-	fromInput.type = "text";
-	fromInput.size = "10";
-	fromInput.id = "form-loadfunction-from" + rowId;
-	var fromSpan = document.createElement("span");
-	fromSpan.innerHTML = "From: "
-	var fromToSpaceSpan = document.createElement("span");
-	fromToSpaceSpan.innerHTML = "&nbsp;"
-	var toInput = document.createElement("input");
-	toInput.type = "text";
-	toInput.size = "10";
-	toInput.id = "form-loadfunction-to" + rowId;
-	var toSpan = document.createElement("span");
-	toSpan.innerHTML = "To: "
-	var fromTo = document.createElement("div");
-	fromTo.className = "col-lg-4";
-	fromTo.appendChild(fromSpan);
-	fromTo.appendChild(fromInput);
-	fromTo.appendChild(fromToSpaceSpan);
-	fromTo.appendChild(toSpan);
-	fromTo.appendChild(toInput);
+
+	// user percent
+	var userPercentSpan = document.createElement("span");
+	userPercentSpan.innerHTML = "Pourcentage of user: "
+	var userPercentInput = document.createElement("input");
+	userPercentInput.type = "number";
+	userPercentInput.id = "form-loadfunction-user-percent" + rowId;
+	userPercentInput.min = "1";
+	userPercentInput.max = "100";
+	userPercentInput.step = "0.1";
+	userPercentInput.value = "0";
+	var userPercentPercentSpan = document.createElement("span");
+	userPercentPercentSpan.innerHTML = "%"
+	var userPercent = document.createElement("div");
+	userPercent.className = "col-lg-3";
+	userPercent.appendChild(userPercentSpan);
+	userPercent.appendChild(userPercentInput);
+	userPercent.appendChild(userPercentPercentSpan);
 
 	// function label
 	var functionSpan = document.createElement("span");
-	functionSpan.innerHTML = "Function: "
+	functionSpan.innerHTML = "JavaScript function:"
 	var functionSpanCol = document.createElement("div");
-	functionSpanCol.className = "col-lg-1";
+	functionSpanCol.className = "col-lg-2";
 	functionSpanCol.appendChild(functionSpan);
 	// function textarea
 	var functionTextarea = document.createElement("textarea");
 	functionTextarea.className = "form-control";
 	functionTextarea.id = "form-loadfunction-function" + rowId;
-	functionTextarea.innerHTML = "function(time) {return 1;}";
+	functionTextarea.innerHTML = "function(time) {return 0;}";
 	var functionCol = document.createElement("div");
 	functionCol.className = "col-lg-6";
 	functionCol.appendChild(functionTextarea);
@@ -227,9 +210,9 @@ function LoadFunctionAddRow() {
 
 	// row
 	var row = document.createElement("div");
-	row.className = "row";
+	row.className = "row loadfunction";
 	row.id = "form-loadfunction-row" + rowId;
-	row.appendChild(fromTo);
+	row.appendChild(userPercent);
 	row.appendChild(functionSpanCol);
 	row.appendChild(functionCol);
 	row.appendChild(buttonsCol);
@@ -237,6 +220,7 @@ function LoadFunctionAddRow() {
 	// error row
 	var errorSpan = document.createElement("span");
 	errorSpan.id = "form-loadfunction-error" + rowId;
+	errorSpan.className = "error";
 	var errorDiv = document.createElement("div");
 	errorDiv.className = "col-lg-12";
 	errorDiv.appendChild(errorSpan)
@@ -256,10 +240,19 @@ function LoadFunctionRemoveRow(rowIndex) {
 }
 
 function LoadFunctionError(rowIndex, error) {
-	document.getElementById("form-loadfunction-error" + rowIndex).innerHTML = "&darr; " + error;
+	document.getElementById("form-loadfunction-error" + rowIndex).innerHTML = "<i class=\"fas fa-bug warning\"></i> &darr; " + error;
 	document.getElementById("form-loadfunction-error-row" + rowIndex).style.display = "flex";
-	//displaying loading gif
+	// removing loading gif
 	document.getElementById("loading-gif").style.display = "none";
+	return false;
+}
+
+function FormError(error) {
+	document.getElementById('form-error').innerHTML = "<i class=\"fas fa-bug warning\"></i> " + error;
+	document.getElementById('form-error').style.display = "block";
+	// removing loading gif
+	document.getElementById("loading-gif").style.display = "none";
+	return false;
 }
 
 function SelectOrchestrator(selectElement) {

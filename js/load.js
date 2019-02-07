@@ -45,27 +45,16 @@ class LoadCalculator {
 
 /* UserLoadFunction */
 class UserLoadFunction {
-	constructor(parts) {
-		this.parts = parts;
+	constructor(functions) {
+		this.functions = functions;
 	}
 
 	getLoadAt(time) {
-		var el = null;
-		for (var i=0;i<this.parts.length; i++){
-			// is-it inside the borders?parts
-			if (this.parts[i].from <= time && this.parts[i].to > time) {
-				el = this.parts[i];
-				break;
-			}
+		var load = 0;
+		for (var i=0;i<this.functions.length; i++){
+			load += this.functions[i].func(time) * this.functions[i].percent;
 		}
-		return el.loadFunction(time);
-	}
-}
-class UserLoadFunctionPart {
-	constructor(from, to, loadFunction) {
-		this.from = from;
-		this.to = to;
-		this.loadFunction = loadFunction;
+		return load;
 	}
 }
 

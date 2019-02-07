@@ -33,8 +33,8 @@
 			</div>
 			<!-- introduction -->
 			<div class="row introduction">
-				<div class="col-lg-12">
-					<p>This tool helps you configuring your application for auto-scaling inside various cloud providers (only Kubernetes for now). It calculates the load of your application against a 'worst case scenario' and gives you back the key figures for your application auto-scaling configuration.<br />
+				<div class="col-lg-12 text-justify">
+					<p>This tool helps you configuring your application for auto-scaling inside various orchestrators (only Kubernetes is available for now). It calculates the load of your application against a 'worst case scenario' and gives you back the key figures for your application auto-scaling configuration.<br />
 					You can find a more detailed description of the problematic and on how this tools works reading the article we published on Medium: <a href="#" target="_blank">How to ‘mathematically’ configure your application (and orchestrator) for auto-scaling</a>.</p>
 				</div>
 			</div>
@@ -66,7 +66,7 @@
 					<input type="text" id="form-instance-max-load" size="15" />
 				</div>
 				<div class="col-lg-7 from-information">
-					The unit has to match your load function
+					the unit has to match your load function
 				</div>
 			</div>
 			<div class="row">
@@ -91,34 +91,32 @@
 			<!-- load function -->
 			<div class="row">
 				<div class="col-lg-12">
-					<h3>Load function</h3>
+					<h3>Load functions</h3>
 				</div>
 			</div>
 			<div class="row">
 				<div class="col-lg-12 information-row">
-					The load function translate the load of a <b>single user</b> over time (in seconds).<br />
+					A load function translate the load of a <b>single user</b> over time (in seconds).<br />
 					The time 't=0' correspond to the moment when the user starts rolling load test.<br />
 					The function has to return a value <b>in the same unit as the 'Instance maximal load'</b> metric you filled above.<br />
-					It has to cover a time range from <b>-Infinity</b> to <b>Infinity</b>, without any gap or time overlapping.<br />
-					End times are <b>excluded</b> from the time range (only start times).
+					It should cover a time range from <b>-Infinity</b> to <b>Infinity</b>.
 				</div>
 			</div>
 			<div id="form-loadfunction-rows">
 				<div id="form-loadfunction-error-row0" class="row error-row">
 					<div class="col-lg-12">
-						<span id="form-loadfunction-error0"></span>
+						<span id="form-loadfunction-error0" class="error"></span>
 					</div>
 				</div>
-				<div id="form-loadfunction-row0" class="row">
-					<div class="col-lg-4">
-						From: <input type="text" size="10" id="form-loadfunction-from0" value="-Infinity" />
-						To: <input type="text" size="10" id="form-loadfunction-to0" value="Infinity" />
+				<div id="form-loadfunction-row0" class="row loadfunction">
+					<div class="col-lg-3">
+						<span>Pourcentage of user: </span><input type="number" min="1" max="100" step="0.1" id="form-loadfunction-user-percent0" value="100" /><span>%</span>
 					</div>
-					<div class="col-lg-1">
-						Function:
+					<div class="col-lg-2">
+						<span>JavaScript function:</span>
 					</div>
 					<div class="col-lg-6">
-						<textarea id="form-loadfunction-function0" class="form-control">function(time) {return 1;}</textarea>
+						<textarea id="form-loadfunction-function0" class="form-control">function(time) {return 0;}</textarea>
 					</div>
 					<div class="col-lg-1 text-center">
 						<input class="btn btn-secondary" onclick="LoadFunctionRemoveRow(0);" value="-" type="button">
@@ -206,7 +204,7 @@
 					Horizontal pod autoscaler tolerance:
 				</div>
 				<div class="col-lg-2">
-					<input type="number" min="0" step="0.01" id="form-k8s-1-12-hpat" value="0.1" />
+					<input type="number" min="0" max="100" step="0.01" id="form-k8s-1-12-hpat" value="0.1" />
 				</div>
 				<div class="col-lg-6 from-information">
 					in percent (defaults to 0.1%)
@@ -223,10 +221,21 @@
 					in seconds (defaults to 5 minutes)
 				</div>
 			</div>
-			<!-- computation & graphics -->
+			<!-- computation -->
 			<div class="row">
 				<div class="col-lg-12">
 					<h3>Computation</h3>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-lg-3">
+					Number of points per second:
+				</div>
+				<div class="col-lg-2">
+					<input type="number" id="form-number-point-second" min="1" step="1" value="10" />
+				</div>
+				<div class="col-lg-7">
+					make sure this is (10 times) smaller than the smallest period of your load function
 				</div>
 			</div>
 			<div class="row">
@@ -241,15 +250,18 @@
 				</div>
 			</div>
 			<div class="row buttons">
-				<div class="col-lg-6">
+				<div class="col-lg-1">
 					<input type="reset" class="btn btn-secondary btn-xl text-uppercase" onclick="setTimeout(ResetForm, 0.01);" value="Reset" />
 				</div>
-				<div class="col-lg-6 text-right">
+				<div class="col-lg-10 text-center">
+					<span id="form-error" class="error"></span>
+				</div>
+				<div class="col-lg-1 text-right">
 					<input type="button" id="form-run" class="btn btn-primary btn-xl text-uppercase" onclick="Run();" value="Run!" />
 				</div>
 			</div>
 			</form>
-			<div class="row" id="loading-gif">
+			<div id="loading-gif" class="row text-center">
 				<div class="col-lg-12">
 					<img src="img/loading.gif" />
 				</div>
@@ -293,12 +305,12 @@
 						<ul>
 							<li>If this value is <b>below 0.6</b>, here is a list of what you can do:<br />
 								<ul>
-									<li>your loadtest scenario may be too constrictive</li>
-									<li>you can increase the minimum number of instances</li>
+									<li>increase the minimum number of instances</li>
 									<li>increase resource to each instance</li>
 									<li>lower application startup time</li>
 									<li>work on your application performances</li>
 									<li>lower your Horizontal Pod Autoscaler Sync Period</li>
+									<li>your loadtest scenario may be too constrictive</li>
 								</ul>
 							</li>
 							<li>If this value is <b>above 0.9</b> it eather means that the load test scenario is not enough constrictive or that you just built the best application ever!</li>
