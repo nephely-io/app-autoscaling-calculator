@@ -1,6 +1,6 @@
 function OnLoad() {
-	// displaying back the selected cloud provider options
-	SelectCloudProvider(document.getElementById("form-cloud-provider"));
+	// displaying back the selected orchestrator options
+	SelectOrchestrator(document.getElementById("form-orchestrator"));
 }
 
 (function($) {
@@ -76,7 +76,6 @@ function Run() {
 		new UserLoadFunctionPart(1.8, Infinity, function(time){return 0;}),
 		// new UserLoadFunctionPart(2, Infinity, function(time){return 0.01;})
 	]);
-	console.log(userLoadFunction.getLoadAt(0));
 
 	/* FORM */
 	// application
@@ -105,14 +104,13 @@ function Run() {
 			console.log("Linear");
 			break;
 	}
-	console.log(loadCoordonates);
 	// displaying load chart
 	ChartsDesigner.DrawLoadOverTime('chart-load-time', loadCoordonates);
 
-	// cloud providers
+	// orchestrators
 	var rowsClass = null;
 	var resultCoordonates = null;
-	switch(document.getElementById("form-cloud-provider").value) {
+	switch(document.getElementById("form-orchestrator").value) {
 		// kubernetes 1.12
 		case "kubernetes-1.12":
 			var horizontalPodAutoscalerSyncPeriod = parseInt(document.getElementById("form-k8s-1-12-hpasp").value);
@@ -127,11 +125,11 @@ function Run() {
 
 		default: break;
 	}
-	// displaying cloud provider results rows
+	// displaying orchestrator results rows
 	if (rowsClass != null) {
 		var rows = document.getElementsByClassName(rowsClass);
 		for (var i=0; i<rows.length; i++) {
-			rows[i].style.display = "flex"; // back to default
+			rows[i].style.display = "block"; // back to default
 		}
 	}
 
@@ -264,7 +262,7 @@ function LoadFunctionError(rowIndex, error) {
 	document.getElementById("loading-gif").style.display = "none";
 }
 
-function SelectCloudProvider(selectElement) {
+function SelectOrchestrator(selectElement) {
 	// undisplay every rows
 	["kubernetes-1-12"].forEach(element => {
 		var rows = document.getElementsByClassName(element);
@@ -290,7 +288,7 @@ function SelectCloudProvider(selectElement) {
 }
 
 function ResetForm() {
-	SelectCloudProvider(document.getElementById("form-cloud-provider"));
+	SelectOrchestrator(document.getElementById("form-orchestrator"));
 	document.getElementById("loading-gif").style.display = "none";
 	document.getElementById('results').style.display = "none";
 }

@@ -1,6 +1,10 @@
 /* charts designer */
 class ChartsDesigner {
 	static DrawLoadOverTime(canvasId, coordonates) {
+		// clearing canvas
+		ChartsDesigner._resetCanvas(canvasId);
+		
+		// drawing chart
 		new Chart(document.getElementById(canvasId).getContext('2d'), {
 			type: 'line',
 			data: {
@@ -52,7 +56,6 @@ class ChartsDesigner {
 	
 	static DrawResults(canvasId, results) {
 		// number of instances
-		var instancesLoadPercentData = results.map(e => Math.round(e.instanceLoadPercent * 1000) / 10);
 		var instancesReadyData = [{"x": results[0].time, "y": results[0].instancesReady}]
 		var instancesTotalData = [{"x": results[0].time, "y": results[0].instancesWaiting.length}]
 		for (var i=1; i<results.length; i++){
@@ -71,7 +74,10 @@ class ChartsDesigner {
 			instancesReadyData.push({"x": results[results.length-1].time, "y": results[results.length-1].instancesReady});
 		}
 
-		// parsing labels
+		// clearing canvas
+		ChartsDesigner._resetCanvas(canvasId);
+
+		// drawing chart
 		new Chart(document.getElementById(canvasId).getContext('2d'), {
 			type: 'line',
 			data: {
@@ -160,5 +166,13 @@ class ChartsDesigner {
 				}
 			}
 		});
+	}
+
+	static _resetCanvas(id) {
+		var row = document.getElementById(id + "-row");
+		row.innerHTML = "";
+		var canvas = document.createElement("canvas");
+		canvas.id = id;
+		row.appendChild(canvas);
 	}
 }

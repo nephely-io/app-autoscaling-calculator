@@ -138,14 +138,6 @@
 			</div>
 			<div class="row">
 				<div class="col-lg-3">
-					Number of users:
-				</div>
-				<div class="col-lg-2">
-					<input type="number" min="1" step="1" id="form-number-users" />
-				</div>
-			</div>
-			<div class="row">
-				<div class="col-lg-3">
 					Loadtest duration:
 				</div>
 				<div class="col-lg-2">
@@ -153,6 +145,14 @@
 				</div>
 				<div class="col-lg-7 from-information">
 					in seconds
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-lg-3">
+					Number of users:
+				</div>
+				<div class="col-lg-2">
+					<input type="number" min="1" step="1" id="form-number-users" />
 				</div>
 			</div>
 			<div class="row">
@@ -167,18 +167,18 @@
 					</select>
 				</div>
 			</div>
-			<!-- cloud provider -->
+			<!-- orchestrator -->
 			<div class="row">
 				<div class="col-lg-12">
-					<h3>Cloud provider</h3>
+					<h3>Orchestrator</h3>
 				</div>
 			</div>
 			<div class="row">
 				<div class="col-lg-3">
-					Choose your cloud provider:
+					Select your orchestrator:
 				</div>
 				<div class="col-lg-2">
-					<select id="form-cloud-provider" onchange="SelectCloudProvider(this);">
+					<select id="form-orchestrator" onchange="SelectOrchestrator(this);">
 						<option selected value="null">-- Select --</option>
 						<option value="kubernetes-1.12">Kubernetes (>= 1.12)</option>
 					</select>
@@ -272,32 +272,43 @@
 					<label class="result-label">Maximum number of instances:</label>&nbsp;<span id="results_max-nb-instance" class="result-value"></span><br />
 					<label class="result-label">Maximum load per instance:</label>&nbsp;<span id="results_max-instance-load" class="result-value"></span><br />
 				</div>
-				<div class="col-lg-8">
+				<div id="chart-load-time-row" class="col-lg-8">
 					<canvas id="chart-load-time"></canvas>
 				</div>
 			</div>
 			<div class="row">
-				<div class="col-lg-12">
+				<div id="chart-results-row" class="col-lg-12">
 					<canvas id="chart-results"></canvas>
 				</div>
 			</div>
 			<!-- How to interpret -->
 			<div class="row">
 				<div class="col-lg-12">
-					<h2>How to interpret results?</h2>
+					<h2>How to interpret the results?</h2>
 				</div>
 			</div>
 			<div class="row">
 				<div class="col-lg-12">
-					<p class="results_kubernetes-1-12"><label class="result-label">targetAverageValue:</label> <b>This value should be between 0.6 and 0.8.</b><br />
-						If this value is below 0.6 it eather means that the load test scenario is too constrictive or you should increase you minimum number of instances. If can't get to increase this value, you think about increase the resources given to each instance of work on your application performances.<br />
-						If this value is above 0.8 it eather means that the load test scenario is not enough constrictive or that you just have the best application ever!
+					<p class="results_kubernetes-1-12"><label class="result-label">targetAverageValue:</label> <b>This value should be between 0.6 and 0.9.</b>
+						<ul>
+							<li>If this value is <b>below 0.6</b>, here is a list of what you can do:<br />
+								<ul>
+									<li>your loadtest scenario may be too constrictive</li>
+									<li>you can increase the minimum number of instances</li>
+									<li>increase resource to each instance</li>
+									<li>lower application startup time</li>
+									<li>work on your application performances</li>
+									<li>lower your Horizontal Pod Autoscaler Sync Period</li>
+								</ul>
+							</li>
+							<li>If this value is <b>above 0.9</b> it eather means that the load test scenario is not enough constrictive or that you just built the best application ever!</li>
+						</ul>
 					</p>
 				</div>
 			</div>
 			<div class="row">
 				<div class="col-lg-12">
-					<span class="result-value"><i class="fas fa-exclamation-triangle warning"></i> We remind you that all those test do not take into account the time to spawn new isntances</span>
+					<span class="result-value"><i class="fas fa-exclamation-triangle warning"></i> We remind you that these results do not (yet) take into account the time to spawn new VM instances (if relevant).</span>
 				</div>
 			</div>
 			<!-- back to top -->
