@@ -27,9 +27,7 @@
 		<div class="container">
 			<!-- title -->
 			<div class="row">
-				<div class="col-lg-10">
-					<h1 class="mt-5">Application auto-scaling calculator</h1>
-				</div>
+				<div class="col-lg-10"><h1 class="mt-5">Application auto-scaling calculator</h1></div>
 			</div>
 			<!-- introduction -->
 			<div class="row introduction">
@@ -46,58 +44,38 @@
 		<div class="container form">
 			<!-- title -->
 			<div class="row">
-				<div class="col-lg-6">
-					<h2>Hypothesis</h2>
-				</div>
+				<div class="col-lg-6"><h2>Hypothesis</h2></div>
 			</div>
 			<!-- form -->
 			<form>
 			<!-- your application -->
 			<div class="row">
-				<div class="col-lg-12">
-					<h3>Your application</h3>
-				</div>
+				<div class="col-lg-12"><h3>Your application</h3></div>
 			</div>
-			<div class="row information-row">
-				<div class="col-lg-12">
-					The number of instances will be considered stable at the begining of the load test (and can be higher than the minimum number of instances).
-				</div>
-			</div>
-			<div class="row">
-				<div class="col-lg-3">
-					Instance maximal load:
-				</div>
-				<div class="col-lg-2">
-					<input type="text" id="form-instance-max-load" size="15" />
-				</div>
-				<div class="col-lg-7 from-information">
-					the unit has to match your load function
-				</div>
+			<div class="row information-row"><div class="col-lg-12">
+				The instance start duration correspond to the time from when the scale-up is trigger to the time traffic get routed.<br />
+				The number of instances will be considered stable at the begining of the load test (and can be higher than the minimum number of instances).
+			</div></div>
+			<div id="form-app-error-row" class="row error-row">
+				<div class="col-lg-12"><span id="form-app-error" class="error"></span></div>
 			</div>
 			<div class="row">
-				<div class="col-lg-3">
-					Instance start duration:
-				</div>
-				<div class="col-lg-2">
-					<input type="number" min="1" step="1" id="form-instance-start-duration" />
-				</div>
-				<div class="col-lg-7 from-information">
-					in seconds
-				</div>
+				<div class="col-lg-3">Instance maximal load:</div>
+				<div class="col-lg-2"><input type="text" id="form-instance-max-load" size="15" /></div>
+				<div class="col-lg-7 from-information">the unit has to match your load function</div>
 			</div>
 			<div class="row">
-				<div class="col-lg-3">
-					Minimum number of instances:
-				</div>
-				<div class="col-lg-2">
-					<input type="number" min="1" step="1" id="form-min-number-instances" />
-				</div>
+				<div class="col-lg-3">Instance start duration:</div>
+				<div class="col-lg-2"><input type="number" min="1" step="1" id="form-instance-start-duration" /></div>
+				<div class="col-lg-7 from-information">in seconds</div>
+			</div>
+			<div class="row">
+				<div class="col-lg-3">Minimum number of instances:</div>
+				<div class="col-lg-2"><input type="number" min="1" step="1" id="form-min-number-instances" /></div>
 			</div>
 			<!-- load function -->
 			<div class="row">
-				<div class="col-lg-12">
-					<h3>Load functions</h3>
-				</div>
+				<div class="col-lg-12"><h3>Load functions</h3></div>
 			</div>
 			<div class="row information-row">
 				<div class="col-lg-12">
@@ -108,60 +86,37 @@
 				</div>
 			</div>
 			<div id="form-loadfunction-rows">
-				<div id="form-loadfunction-error-row0" class="row error-row">
-					<div class="col-lg-12">
-						<span id="form-loadfunction-error0" class="error"></span>
-					</div>
+				<div id="form-loadfunction-error0-row" class="row error-row">
+					<div class="col-lg-12"><span id="form-loadfunction-error0" class="error"></span></div>
 				</div>
 				<div id="form-loadfunction-row0" class="row loadfunction">
-					<div class="col-lg-3">
-						<span>Pourcentage of user: </span><input type="number" min="0.1" max="100" step="0.1" id="form-loadfunction-user-percent0" value="100" /><span>%</span>
-					</div>
-					<div class="col-lg-2">
-						<span>JavaScript function:</span>
-					</div>
-					<div class="col-lg-6">
-						<textarea id="form-loadfunction-function0" class="form-control">function(time) {return 0;}</textarea>
-					</div>
-					<div class="col-lg-1 text-center">
-						<input class="btn btn-secondary" onclick="LoadFunctionRemoveRow(0);" value="-" type="button">
-					</div>
+					<div class="col-lg-3"><span>Pourcentage of user: </span><input type="number" min="0.1" max="100" step="0.1" id="form-loadfunction-user-percent0" value="100" /><span>%</span></div>
+					<div class="col-lg-2"><span>JavaScript function:</span></div>
+					<div class="col-lg-6"><textarea id="form-loadfunction-function0" class="form-control">function(time) {return 0;}</textarea></div>
+					<div class="col-lg-1 text-center"><input class="btn btn-secondary" onclick="LoadFunctionRemoveRow(0);" value="-" type="button"></div>
 				</div>
 			</div>
 			<div class="row">
-				<div class="col-lg-12 text-right">
-					<input type="button" class="btn btn-primary" onclick="LoadFunctionAddRow();" value="+" />
-				</div>
+				<div class="col-lg-12 text-right"><input type="button" class="btn btn-primary" onclick="LoadFunctionAddRow();" value="+" /></div>
 			</div>
 			<!-- loadtest -->
 			<div class="row">
-				<div class="col-lg-12">
-					<h3>LoadTest</h3>
-				</div>
+				<div class="col-lg-12"><h3>LoadTest</h3></div>
+			</div>
+			<div id="form-loadtest-error-row" class="row error-row">
+				<div class="col-lg-12"><span id="form-loadtest-error" class="error"></span></div>
 			</div>
 			<div class="row">
-				<div class="col-lg-3">
-					Loadtest duration:
-				</div>
-				<div class="col-lg-2">
-					<input type="number" min="1" step="1" id="form-loadtest-duration" />
-				</div>
-				<div class="col-lg-7 from-information">
-					in seconds
-				</div>
+				<div class="col-lg-3">Loadtest duration:</div>
+				<div class="col-lg-2"><input type="number" min="1" step="1" id="form-loadtest-duration" /></div>
+				<div class="col-lg-7 from-information">in seconds</div>
 			</div>
 			<div class="row">
-				<div class="col-lg-3">
-					Number of users:
-				</div>
-				<div class="col-lg-2">
-					<input type="number" min="1" step="1" id="form-number-users" />
-				</div>
+				<div class="col-lg-3">Number of users:</div>
+				<div class="col-lg-2"><input type="number" min="1" step="1" id="form-number-users" /></div>
 			</div>
 			<div class="row">
-				<div class="col-lg-3">
-					User distribution function:
-				</div>
+				<div class="col-lg-3">User distribution function:</div>
 				<div class="col-lg-2">
 					<select id="form-loadtest-distribution">
 						<option value="gauss" selected>Gaussian</option>
@@ -172,14 +127,13 @@
 			</div>
 			<!-- orchestrator -->
 			<div class="row">
-				<div class="col-lg-12">
-					<h3>Orchestrator</h3>
-				</div>
+				<div class="col-lg-12"><h3>Orchestrator</h3></div>
+			</div>
+			<div id="form-orchestrator-error-row" class="row error-row">
+				<div class="col-lg-12"><span id="form-orchestrator-error" class="error"></span></div>
 			</div>
 			<div class="row">
-				<div class="col-lg-3">
-					Select your orchestrator:
-				</div>
+				<div class="col-lg-3">Select your orchestrator:</div>
 				<div class="col-lg-2">
 					<select id="form-orchestrator" onchange="SelectOrchestrator(this);">
 						<option selected value="null">-- Select --</option>
@@ -194,87 +148,51 @@
 				</div>
 			</div>
 			<div class="row kubernetes-1-12">
-				<div class="col-lg-4">
-					Horizontal pod autoscaler sync period:
-				</div>
-				<div class="col-lg-2">
-					<input type="number" min="1" step="1" id="form-k8s-1-12-hpasp" value="15" />
-				</div>
-				<div class="col-lg-6 from-information">
-					in seconds (defaults to 15 seconds)
-				</div>
+				<div class="col-lg-4">Horizontal pod autoscaler sync period:</div>
+				<div class="col-lg-2"><input type="number" min="1" step="1" id="form-k8s-1-12-hpasp" value="15" /></div>
+				<div class="col-lg-6 from-information">in seconds (defaults to 15 seconds)</div>
 			</div>
 			<div class="row kubernetes-1-12">
-				<div class="col-lg-4">
-					Horizontal pod autoscaler tolerance:
-				</div>
-				<div class="col-lg-2">
-					<input type="number" min="0" max="100" step="0.01" id="form-k8s-1-12-hpat" value="0.1" />
-				</div>
-				<div class="col-lg-6 from-information">
-					in percent (defaults to 0.1%)
-				</div>
+				<div class="col-lg-4">Horizontal pod autoscaler tolerance:</div>
+				<div class="col-lg-2"><input type="number" min="0" max="100" step="0.01" id="form-k8s-1-12-hpat" value="0.1" /></div>
+				<div class="col-lg-6 from-information">in percent (defaults to 0.1%)</div>
 			</div>
 			<div class="row kubernetes-1-12">
-				<div class="col-lg-5">
-					Horizontal pod autoscaler downscale stabilisation period:
-				</div>
-				<div class="col-lg-2">
-					<input type="number" min="1" step="1" id="form-k8s-1-12-hpadsp" value="300" />
-				</div>
-				<div class="col-lg-5 from-information">
-					in seconds (defaults to 5 minutes)
-				</div>
+				<div class="col-lg-5">Horizontal pod autoscaler downscale stabilisation period:</div>
+				<div class="col-lg-2"><input type="number" min="1" step="1" id="form-k8s-1-12-hpadsp" value="300" /></div>
+				<div class="col-lg-5 from-information">in seconds (defaults to 5 minutes)</div>
 			</div>
 			<!-- computation -->
 			<div class="row">
-				<div class="col-lg-12">
-					<h3>Computation</h3>
-				</div>
+				<div class="col-lg-12"><h3>Computation</h3></div>
 			</div>
 			<div class="row information-row">
-				<div class="col-lg-12">
-					The number of iteration for the Riemann summ shouldn't be less than <i><b>CALCULATION</b></i>.
-				</div>
+				<div class="col-lg-12">The number of iteration for the Riemann sum shouldn't be less than <b>loadtest duration * number of points per second</b>.</div>
+			</div>
+			<div id="form-computation-error-row" class="row error-row">
+				<div class="col-lg-12"><span id="form-computation-error" class="error"></span></div>
 			</div>
 			<div class="row">
-				<div class="col-lg-3">
-					Number of points per second:
-				</div>
-				<div class="col-lg-2">
-					<input type="number" id="form-number-point-second" min="1" step="1" value="10" />
-				</div>
-				<div class="col-lg-7">
-					make sure this is (10 times) smaller than the smallest period of your load function
-				</div>
+				<div class="col-lg-3">Number of points per second:</div>
+				<div class="col-lg-2"><input type="number" id="form-number-point-second" min="1" step="1" value="10" /></div>
+				<div class="col-lg-7">make sure this is (10 times) smaller than the smallest period of your load function</div>
 			</div>
 			<div class="row">
-				<div class="col-lg-3">
-					Number of iterations:
-				</div>
-				<div class="col-lg-2">
-					<input type="number" id="form-number-iterations" min="1000" step="1" value="100000" />
-				</div>
-				<div class="col-lg-7">
-					for the Riemann sum, the higher the more accurate
-				</div>
+				<div class="col-lg-3">Number of iterations:</div>
+				<div class="col-lg-2"><input type="number" id="form-number-iterations" min="1" step="1" value="100000" /></div>
+				<div class="col-lg-7">for the Riemann sum, the higher the more accurate (but the slower)</div>
 			</div>
 			<div class="row buttons">
-				<div class="col-lg-1">
-					<input type="reset" class="btn btn-secondary btn-xl text-uppercase" onclick="setTimeout(ResetForm, 0.01);" value="Reset" />
-				</div>
+				<div class="col-lg-1"><input type="reset" class="btn btn-secondary btn-xl text-uppercase" onclick="setTimeout(ResetForm, 0.01);" value="Reset" /></div>
 				<div class="col-lg-10 text-center">
+					<span id="form-warning" class="warning"></span>
 					<span id="form-error" class="error"></span>
 				</div>
-				<div class="col-lg-1 text-right">
-					<input type="button" id="form-run" class="btn btn-primary btn-xl text-uppercase" onclick="Run();" value="Run!" />
-				</div>
+				<div class="col-lg-1 text-right"><input type="button" id="form-run" class="btn btn-primary btn-xl text-uppercase" onclick="Run();" value="Run!" /></div>
 			</div>
 			</form>
 			<div id="loading-gif" class="row text-center">
-				<div class="col-lg-12">
-					<img src="img/loading.gif" />
-				</div>
+				<div class="col-lg-12"><img src="img/loading.gif" /></div>
 			</div>
 		</div>
 	</section>
@@ -284,15 +202,11 @@
 		<div class="container">
 				<!-- results -->
 			<div class="row">
-				<div class="col-lg-12">
-					<h2>Results</h2>
-				</div>
+				<div class="col-lg-12"><h2>Results</h2></div>
 			</div>
 			<div class="row">
 				<div class="col-lg-1"></div>
-				<div id="chart-loadfunctions-row" class="col-lg-10">
-					<canvas id="chart-loadfunctions"></canvas>
-				</div>
+				<div id="chart-loadfunctions-row" class="col-lg-10"><canvas id="chart-loadfunctions"></canvas></div>
 				<div class="col-lg-1"></div>
 			</div>
 			<div class="row">
@@ -301,20 +215,14 @@
 					<label class="result-label">Maximum number of instances:</label>&nbsp;<span id="results_max-nb-instance" class="result-value"></span><br />
 					<label class="result-label">Maximum load per instance:</label>&nbsp;<span id="results_max-instance-load" class="result-value"></span><br />
 				</div>
-				<div id="chart-load-time-row" class="col-lg-8">
-					<canvas id="chart-load-time"></canvas>
-				</div>
+				<div id="chart-load-time-row" class="col-lg-8"><canvas id="chart-load-time"></canvas></div>
 			</div>
 			<div class="row">
-				<div id="chart-results-row" class="col-lg-12">
-					<canvas id="chart-results"></canvas>
-				</div>
+				<div id="chart-results-row" class="col-lg-12"><canvas id="chart-results"></canvas></div>
 			</div>
 			<!-- How to interpret -->
 			<div class="row">
-				<div class="col-lg-12">
-					<h2>How to interpret the results?</h2>
-				</div>
+				<div class="col-lg-12"><h2>How to interpret the results?</h2></div>
 			</div>
 			<div class="row">
 				<div class="col-lg-12">
@@ -330,7 +238,7 @@
 									<li>your loadtest scenario may be too constrictive</li>
 								</ul>
 							</li>
-							<li>If this value is <b>above 0.9</b> it eather means that the load test scenario is not enough constrictive or that you just built the best application ever!</li>
+							<li>If this value is <b>above 0.9</b> it eather means that the load test scenario is not constrictive enough or that you just built the best application ever!</li>
 						</ul>
 					</p>
 				</div>
@@ -342,9 +250,7 @@
 			</div>
 			<!-- back to top -->
 			<div class="row text-center">
-				<div class="col-lg-12">
-					<a class="js-scroll-trigger" href="#form"><i class="fas fa-arrow-circle-up"></i> Back to top</a>
-				</div>
+				<div class="col-lg-12"><a class="js-scroll-trigger" href="#form"><i class="fas fa-arrow-circle-up"></i> Back to top</a></div>
 			</div>
 		</div>
 	</section>

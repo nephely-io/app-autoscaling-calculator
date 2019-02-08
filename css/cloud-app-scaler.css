@@ -165,7 +165,8 @@ section#form .kubernetes-1-12 {
 section#form .buttons .btn {
 	margin-top: 30px;
 }
-section#form #form-error {
+section#form #form-error,
+section#form #form-warning  {
 	margin-top: 3rem;
 }
 /* loading */
