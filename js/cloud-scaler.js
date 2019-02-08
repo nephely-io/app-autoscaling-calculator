@@ -26,13 +26,18 @@ function Run() {
 	document.getElementById('results').style.display = "none";
 	document.getElementById("loading-gif").style.display = "flex";
 
-	// removing old graphs
-	if (rowsClass != null) {
-		var rows = document.getElementsByClassName("chartjs-size-monitor");
-		for (var i=0; i<rows.length; i++) {
-			rows[i].parentNode.removeChild(rows[i]);
-		}
-	}
+	/* FORM */
+	// application
+	var instanceMaxLoad = parseFloat(document.getElementById("form-instance-max-load").value);
+	var instanceStartDuration = parseInt(document.getElementById("form-instance-start-duration").value);
+	var minNbInstances = parseInt(document.getElementById("form-min-number-instances").value);
+	// load test
+	var nbUsers = parseInt(document.getElementById("form-number-users").value);
+	var loadDuration = parseInt(document.getElementById("form-loadtest-duration").value);
+	// computation & graphics
+	var nbIterations = parseInt(document.getElementById("form-number-iterations").value);
+	var nbPointSecond = parseInt(document.getElementById("form-number-point-second").value);
+	var nbCoordonates = Math.ceil(loadDuration * nbPointSecond);
 	
 	// parsing load function
 	var loadFunctions = [];
@@ -49,33 +54,22 @@ function Run() {
 			eval("loadFunction =  " + document.getElementById("form-loadfunction-function" + i).value);
 			if (typeof loadFunction !== "function") {
 				LoadFunctionError(i, "Load function is not a function.");
-				return FormError("Error with load function (see above)");
+				return FormError("Error with a load function (see above)");
 			}
 		} catch(e) {
 			LoadFunctionError(i, "Could parse load function: " + e);
-			return FormError("Error with load function (see above)");
+			return FormError("Error with a load function (see above)");
 		}
 		var userPercent = parseFloat(document.getElementById("form-loadfunction-user-percent" + i).value);
 
 		totalPercent += userPercent;
-		loadFunctions.push({"percent": userPercent / 100, "func": loadFunction});
+		loadFunctions.push({percent: userPercent / 100, func: loadFunction});
 	}
 	if (totalPercent != 100) {
 		return FormError("Load functions user percent total is not 100%.");
 	}
+	ChartsDesigner.DrawLoadFunctions('chart-loadfunctions', loadFunctions, nbPointSecond);
 	var userLoadFunction = new UserLoadFunction(loadFunctions);
-
-	/* FORM */
-	// application
-	var instanceMaxLoad = parseFloat(document.getElementById("form-instance-max-load").value);
-	var instanceStartDuration = parseInt(document.getElementById("form-instance-start-duration").value);
-	var minNbInstances = parseInt(document.getElementById("form-min-number-instances").value);
-	// load test
-	var nbUsers = parseInt(document.getElementById("form-number-users").value);
-	var loadDuration = parseInt(document.getElementById("form-loadtest-duration").value);
-	// computation & graphics
-	var nbIterations = parseInt(document.getElementById("form-number-iterations").value);
-	var nbCoordonates = Math.ceil(loadDuration * parseInt(document.getElementById("form-number-point-second").value));
 
 	/* COMPUTING */
 	// calculating load
@@ -110,7 +104,8 @@ function Run() {
 			resultCoordonates = Kubernetes_1_12.instancesStatusOverTime(loadCoordonates, instanceMaxLoad, scaleUpPercent, instanceStartDuration, minNbInstances, horizontalPodAutoscalerSyncPeriod, horizontalPodAutoscalerTolerance);
 			break;
 
-		default: break;
+		default:
+			return FormError("You must select an orchestrator");
 	}
 	// displaying orchestrator results rows
 	if (rowsClass != null) {
@@ -171,10 +166,10 @@ function LoadFunctionAddRow() {
 	var userPercentInput = document.createElement("input");
 	userPercentInput.type = "number";
 	userPercentInput.id = "form-loadfunction-user-percent" + rowId;
-	userPercentInput.min = "1";
+	userPercentInput.min = "0.1";
 	userPercentInput.max = "100";
 	userPercentInput.step = "0.1";
-	userPercentInput.value = "0";
+	userPercentInput.value = "10";
 	var userPercentPercentSpan = document.createElement("span");
 	userPercentPercentSpan.innerHTML = "%"
 	var userPercent = document.createElement("div");
@@ -291,4 +286,13 @@ function RemoveHTML(id) {
 	var elem = document.getElementById(id);
 	elem.parentNode.removeChild(elem);
 	return false;
+}
+
+function RandomColor() {
+	var letters = '0123456789ABCDEF';
+	var color = '#';
+	for (var i = 0; i < 6; i++) {
+		color += letters[Math.floor(Math.random() * 16)];
+	}
+	return color;
 }

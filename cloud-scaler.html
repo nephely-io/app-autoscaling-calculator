@@ -58,6 +58,11 @@
 					<h3>Your application</h3>
 				</div>
 			</div>
+			<div class="row information-row">
+				<div class="col-lg-12">
+					The number of instances will be considered stable at the begining of the load test (and can be higher than the minimum number of instances).
+				</div>
+			</div>
 			<div class="row">
 				<div class="col-lg-3">
 					Instance maximal load:
@@ -94,8 +99,8 @@
 					<h3>Load functions</h3>
 				</div>
 			</div>
-			<div class="row">
-				<div class="col-lg-12 information-row">
+			<div class="row information-row">
+				<div class="col-lg-12">
 					A load function translate the load of a <b>single user</b> over time (in seconds).<br />
 					The time 't=0' correspond to the moment when the user starts rolling load test.<br />
 					The function has to return a value <b>in the same unit as the 'Instance maximal load'</b> metric you filled above.<br />
@@ -110,7 +115,7 @@
 				</div>
 				<div id="form-loadfunction-row0" class="row loadfunction">
 					<div class="col-lg-3">
-						<span>Pourcentage of user: </span><input type="number" min="1" max="100" step="0.1" id="form-loadfunction-user-percent0" value="100" /><span>%</span>
+						<span>Pourcentage of user: </span><input type="number" min="0.1" max="100" step="0.1" id="form-loadfunction-user-percent0" value="100" /><span>%</span>
 					</div>
 					<div class="col-lg-2">
 						<span>JavaScript function:</span>
@@ -182,8 +187,8 @@
 					</select>
 				</div>
 			</div>
-			<div class="row kubernetes-1-12">
-				<div class="col-lg-12 information-row">
+			<div class="row kubernetes-1-12 information-row">
+				<div class="col-lg-12">
 					Following information are set on the <a href="https://kubernetes.io/docs/reference/command-line-tools-reference/kube-controller-manager/" target="_blank">kube-controller-manager</a> service.<br />
 					For more information about Kubernetes horizontal pod auto-scaling, please refer to the offcicial <a href="https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/" target="_blank">documentation</a>.
 				</div>
@@ -225,6 +230,11 @@
 			<div class="row">
 				<div class="col-lg-12">
 					<h3>Computation</h3>
+				</div>
+			</div>
+			<div class="row information-row">
+				<div class="col-lg-12">
+					The number of iteration for the Riemann summ shouldn't be less than <i><b>CALCULATION</b></i>.
 				</div>
 			</div>
 			<div class="row">
@@ -277,6 +287,13 @@
 				<div class="col-lg-12">
 					<h2>Results</h2>
 				</div>
+			</div>
+			<div class="row">
+				<div class="col-lg-1"></div>
+				<div id="chart-loadfunctions-row" class="col-lg-10">
+					<canvas id="chart-loadfunctions"></canvas>
+				</div>
+				<div class="col-lg-1"></div>
 			</div>
 			<div class="row">
 				<div class="col-lg-4">

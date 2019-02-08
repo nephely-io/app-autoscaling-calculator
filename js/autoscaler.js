@@ -38,19 +38,19 @@ class Kubernetes_1_12 {
 			nbInstanceStart = minNbInstances;
 		}
 		var lastStatus = {
-			"time": 0,
-			"instancesReady": nbInstanceStart,
-			"instancesWaiting": [],
-			"instanceLoadPercent": loadCoordonates[0].y / (nbInstanceStart * instanceMaxLoad)
+			time: 0,
+			instancesReady: nbInstanceStart,
+			instancesWaiting: [],
+			instanceLoadPercent: loadCoordonates[0].y / (nbInstanceStart * instanceMaxLoad)
 		};
 		var status = [lastStatus];
 		var lastSync = -Infinity;
 		for (var i=1; i<loadCoordonates.length; i++) {
 			var currentStatus = {
-				"time": loadCoordonates[i].x,
-				"instancesReady": lastStatus.instancesReady,
-				"instancesWaiting": lastStatus.instancesWaiting.slice(0),
-				"instanceLoadPercent": 0
+				time: loadCoordonates[i].x,
+				instancesReady: lastStatus.instancesReady,
+				instancesWaiting: lastStatus.instancesWaiting.slice(0),
+				instanceLoadPercent: 0
 			};
 
 			// checking if instances has started (passed from 'waiting' to 'ready')
@@ -76,7 +76,7 @@ class Kubernetes_1_12 {
 				if ((currentLoadPercent > 1 + horizontalPodAutoscalerTolerance) && (wantedNumberOfReplica > totalNumberOfInstances)) {
 					// starting new instances
 					for (var j=0; j < (wantedNumberOfReplica - totalNumberOfInstances); j++) {
-						currentStatus.instancesWaiting.push({"time": loadCoordonates[i].x});
+						currentStatus.instancesWaiting.push({time: loadCoordonates[i].x});
 					}
 				} else if ((currentLoadPercent < 1 - horizontalPodAutoscalerTolerance) && (wantedNumberOfReplica < totalNumberOfInstances)) { // or = ?
 					// TODO scale down

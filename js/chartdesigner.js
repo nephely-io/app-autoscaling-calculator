@@ -1,5 +1,82 @@
 /* charts designer */
 class ChartsDesigner {
+	static DrawLoadFunctions(canvasId, loadFunctions, nbPointSecond) {
+	// clearing canvas
+	ChartsDesigner._resetCanvas(canvasId);
+
+	// calculating load functions coordonates
+	var inTime = -5;
+	var outTime = 30;
+	var lineColors = ["#e49d23", "#8b7356", "#904349", "#20445f", "#aecff0"];
+	var datasets = [];
+	for (var i=0; i<loadFunctions.length; i++) {
+		var data = [];
+		for (var j=inTime; j<=outTime; j+= 1/nbPointSecond) {
+			data.push(loadFunctions[i].func(j));
+		}
+		var color = lineColors[i % lineColors.length];
+		if (i >= lineColors.length) {
+			color = RandomColor();
+		}
+		datasets.push({
+			type: 'line',
+			label: 'Load function ' + i + ' (' + (loadFunctions[i].percent * 100) + '% of users)',
+			borderColor: color,
+			backgroundColor: color,
+			borderWidth: 2,
+			fill: false,
+			data: data
+		});
+	}
+
+	// labels
+	var labels = [];
+	for (var j=inTime; j<=outTime; j+= 1/nbPointSecond) {
+		labels.push(j);
+	}
+
+	// drawing chart
+	new Chart(document.getElementById(canvasId).getContext('2d'), {
+		type: 'line',
+		data: {
+			labels: labels,
+			datasets: datasets
+		},
+		options: {
+			title: {
+				display: true,
+				text: 'Load functions over time'
+			},
+			legend: {
+				position: "bottom",
+			},
+			tooltips: {
+				mode: 'index',
+				intersect: true
+			},
+			scales: {
+				xAxes: [{
+					display: true,
+					scaleLabel: {
+						display: true,
+						labelString: 'Time (seconds)'
+					},
+					min: 0
+				}],
+				yAxes: [{
+					type: 'linear',
+					display: true,
+					scaleLabel: {
+						display: true,
+						labelString: 'Load per user'
+					},
+					min: 0
+				}]
+			}
+		}
+	});
+	}
+
 	static DrawLoadOverTime(canvasId, coordonates) {
 		// clearing canvas
 		ChartsDesigner._resetCanvas(canvasId);

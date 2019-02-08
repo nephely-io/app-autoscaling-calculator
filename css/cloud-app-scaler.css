@@ -151,9 +151,9 @@ section#form .from-information {
 	font-style: italic;
 }
 section#form .information-row {
-	margin-top: 1rem;
-	margin-bottom: 1rem;
+	margin: 1rem 0 1.5rem 0 !important;
 	font-style: italic;
+	border-left: 3px solid #aecff0;
 }
 section#form .error-row {
 	display: none;

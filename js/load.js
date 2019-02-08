@@ -9,7 +9,7 @@ class LoadCalculator {
 			for (var k=1; k<=nbIterations; k++) {
 				load += userLoadFunction.getLoadAt(t - k / nbIterations * duration) * Math.exp(-9 / 2 * Math.pow((2 * k - nbIterations) / nbIterations, 2));
 			}
-			coordonates.push({"x": t, "y": const1 * load});
+			coordonates.push({x: t, y: const1 * load});
 		}
 		return coordonates;
 	}
@@ -23,7 +23,7 @@ class LoadCalculator {
 			for (var k=1; k<=nbIterations; k++) {
 				load += userLoadFunction.getLoadAt(t - k / nbIterations * duration);
 			}
-			coordonates.push({"x": t, "y": const1 * load});
+			coordonates.push({x: t, y: const1 * load});
 		}
 		return coordonates;
 	}
@@ -37,7 +37,7 @@ class LoadCalculator {
 			for (var k=1; k<=nbIterations; k++) {
 				load += k * userLoadFunction.getLoadAt(t - k / nbIterations * duration);
 			}
-			coordonates.push({"x": t, "y": const1 * load});
+			coordonates.push({x: t, y: const1 * load});
 		}
 		return coordonates;
 	}
