@@ -57,7 +57,7 @@ function Run() {
 				return FormError("Error with a load function (see above)");
 			}
 		} catch(e) {
-			LoadFunctionError(i, "Could parse load function: " + e);
+			LoadFunctionError(i, "Could parse load function: " + e + ' (line: ' + e.lineNumber + ', col: ' + e.columnNumber + ')');
 			return FormError("Error with a load function (see above)");
 		}
 		var userPercent = parseFloat(document.getElementById("form-loadfunction-user-percent" + i).value);
