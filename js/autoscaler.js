@@ -5,7 +5,7 @@ class AutoScaler {
 		return AutoScaler._dichotomy(function(scaleUpPercent) {
 			var newLoadCoordonates = loadCoordonates.slice(0);
 			for (var i=0; i<nbIndexes; i++) {
-				var result = Kubernetes_1_12.instancesStatusOverTime(newLoadCoordonates, instanceMaxLoad, scaleUpPercent, instanceStartDuration, minNbInstances, horizontalPodAutoscalerSyncPeriod, horizontalPodAutoscalerInitialReadinessDelay, horizontalPodAutoscalerDownscaleStabilizationWindow, horizontalPodAutoscalerTolerance, true)
+				var result = Kubernetes_1_12.instancesStatusOverTime(newLoadCoordonates, instanceMaxLoad, scaleUpPercent, instanceStartDuration, minNbInstances, horizontalPodAutoscalerSyncPeriod, horizontalPodAutoscalerTolerance, horizontalPodAutoscalerInitialReadinessDelay, horizontalPodAutoscalerDownscaleStabilizationWindow, true)
 				if (result < 0) {
 					return -1;
 				}
@@ -72,19 +72,19 @@ class Kubernetes_1_12 {
 			// is sync period passed
 			if (loadCoordonates[i].x - lastSync > horizontalPodAutoscalerSyncPeriod) {
 				var totalNumberOfInstances = currentStatus.instancesReady + currentStatus.instancesWaiting.length;
-				var currentLoadPercent = loadCoordonates[i].y / (totalNumberOfInstances * instanceMaxLoad * scaleUpPercent);
-				currentStatus.wantedNumberInstances = Math.ceil(totalNumberOfInstances * currentLoadPercent);
+				var instanceRelativeLoadPercent = loadCoordonates[i].y / (totalNumberOfInstances * instanceMaxLoad * scaleUpPercent);
+				currentStatus.wantedNumberInstances = Math.ceil(loadCoordonates[i].y / (instanceMaxLoad * scaleUpPercent));
 				// is load above or below tolerance?
-				if ((currentLoadPercent > 1 + horizontalPodAutoscalerTolerance) && (currentStatus.wantedNumberInstances > totalNumberOfInstances)) {
+				if ((instanceRelativeLoadPercent > 1 + horizontalPodAutoscalerTolerance) && (currentStatus.wantedNumberInstances > totalNumberOfInstances)) {
 					// starting new instances
 					for (var j=0; j < (currentStatus.wantedNumberInstances - totalNumberOfInstances); j++) {
 						currentStatus.instancesWaiting.push({time: loadCoordonates[i].x});
 					}
-				} else if ((currentLoadPercent < 1 - horizontalPodAutoscalerTolerance) && (currentStatus.wantedNumberInstances < totalNumberOfInstances)) {
+				} else if ((instanceRelativeLoadPercent < 1 - horizontalPodAutoscalerTolerance) && (currentStatus.wantedNumberInstances < totalNumberOfInstances)) {
 					// looking for max recommendation over cooldown delay
 					var maxWantedInstanceNumber = currentStatus.wantedNumberInstances;
 					for (var j=0; j<status.length; j++) {
-						if ((status[j].time + horizontalPodAutoscalerDownscaleStabilizationWindow < currentStatus.time) && (status[j].wantedNumberInstances != null) && (status[j].wantedNumberInstances > maxWantedInstanceNumber)) {
+						if ((status[j].wantedNumberInstances != null) && (status[j].time + horizontalPodAutoscalerDownscaleStabilizationWindow > currentStatus.time) && (status[j].wantedNumberInstances > maxWantedInstanceNumber)) {
 							maxWantedInstanceNumber = status[j].wantedNumberInstances;
 						}
 					}
@@ -92,6 +92,9 @@ class Kubernetes_1_12 {
 					// scaling down if needed
 					if (maxWantedInstanceNumber < totalNumberOfInstances) {
 						currentStatus.instancesReady = maxWantedInstanceNumber - currentStatus.instancesWaiting.length;
+						if (currentStatus.instancesReady < minNbInstances) {
+							currentStatus.instancesReady = minNbInstances;
+						}
 					}
 				}
 				lastSync = loadCoordonates[i].x;
