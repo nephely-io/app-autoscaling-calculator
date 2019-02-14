@@ -126,10 +126,18 @@ function Run() {
 			if (isNaN(horizontalPodAutoscalerTolerance) || horizontalPodAutoscalerTolerance <= 0 || horizontalPodAutoscalerTolerance >= 100) {
 				return FormOchestratorError("Incorrect horizontal pod autoscaler tolerance (must be a number between 0 and 100, both excluded)");
 			}
-			var scaleUpPercent = AutoScaler.findScaleUpPercentKubernetes_1_12(loadCoordonates, instanceMaxLoad, instanceStartDuration, minNbInstances, horizontalPodAutoscalerSyncPeriod, horizontalPodAutoscalerTolerance);
+			var horizontalPodAutoscalerInitialReadinessDelay = parseFloat(document.getElementById("form-k8s-1-12-hpaird").value);
+			if (isNaN(horizontalPodAutoscalerInitialReadinessDelay) || horizontalPodAutoscalerInitialReadinessDelay <= 0) {
+				return FormOchestratorError("Incorrect horizontal pod autoscaler readiness delay (must be a number greater than 0)");
+			}
+			var horizontalPodAutoscalerCooldownWindow = parseFloat(document.getElementById("form-k8s-1-12-hpadcw").value);
+			if (isNaN(horizontalPodAutoscalerCooldownWindow) || horizontalPodAutoscalerCooldownWindow <= 0) {
+				return FormOchestratorError("Incorrect horizontal pod autoscaler cooldown window (must be a number greater than 0)");
+			}
+			var scaleUpPercent = AutoScaler.findScaleUpPercentKubernetes_1_12(loadCoordonates, instanceMaxLoad, instanceStartDuration, minNbInstances, horizontalPodAutoscalerSyncPeriod, horizontalPodAutoscalerTolerance, horizontalPodAutoscalerInitialReadinessDelay, horizontalPodAutoscalerCooldownWindow);
 
 			rowsClass = "results_kubernetes-1-12";
-			document.getElementById("results_kubernetes-1-12_targetAverageValue").innerHTML = Math.floor(scaleUpPercent * 1000) / 1000; // should I add instanceMaxLoad?
+			document.getElementById("results_kubernetes-1-12_targetAverageValue").innerHTML = Math.floor(scaleUpPercent * 1000) / 10;
 
 			resultCoordonates = Kubernetes_1_12.instancesStatusOverTime(loadCoordonates, instanceMaxLoad, scaleUpPercent, instanceStartDuration, minNbInstances, horizontalPodAutoscalerSyncPeriod, horizontalPodAutoscalerTolerance);
 			break;

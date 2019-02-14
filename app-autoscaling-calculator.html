@@ -6,7 +6,7 @@
 	<meta name="description" content="">
 	<meta name="author" content="">
 
-	<title>Nephely - Application auto-scaling calculator</title>
+	<title>Application auto-scaling calculator (by Nephely)</title>
 
 	<link href="vendor/fontawesome-5.7.0/css/all.min.css" rel="stylesheet" type="text/css">
 	<link href="vendor/bootstrap-4.2.1/css/bootstrap.min.css" rel="stylesheet">
@@ -158,8 +158,13 @@
 				<div class="col-lg-6 from-information">in percent (defaults to 0.1%)</div>
 			</div>
 			<div class="row kubernetes-1-12">
-				<div class="col-lg-5">Horizontal pod autoscaler downscale stabilisation period:</div>
-				<div class="col-lg-2"><input type="number" min="1" step="1" id="form-k8s-1-12-hpadsp" value="300" /></div>
+				<div class="col-lg-4">Horizontal pod autoscaler readiness delay:</div>
+				<div class="col-lg-2"><input type="number" min="1" step="1" id="form-k8s-1-12-hpaird" value="30" /></div>
+				<div class="col-lg-6 from-information">in percent (defaults to 30s)</div>
+			</div>
+			<div class="row kubernetes-1-12">
+				<div class="col-lg-5">Horizontal pod autoscaler downscale cooldown window:</div>
+				<div class="col-lg-2"><input type="number" min="1" step="1" id="form-k8s-1-12-hpadcw" value="300" /></div>
 				<div class="col-lg-5 from-information">in seconds (defaults to 5 minutes)</div>
 			</div>
 			<!-- computation -->
@@ -211,7 +216,7 @@
 			</div>
 			<div class="row">
 				<div class="col-lg-4">
-					<span class="results_kubernetes-1-12"><label class="result-label">targetAverageValue:</label>&nbsp;<span id="results_kubernetes-1-12_targetAverageValue" class="result-value"></span></span>
+					<span class="results_kubernetes-1-12"><label class="result-label">averageUtilization:</label>&nbsp;<span id="results_kubernetes-1-12_targetAverageValue" class="result-value"></span> (%)</span>
 					<label class="result-label">Maximum number of instances:</label>&nbsp;<span id="results_max-nb-instance" class="result-value"></span><br />
 					<label class="result-label">Maximum load per instance:</label>&nbsp;<span id="results_max-instance-load" class="result-value"></span><br />
 				</div>
@@ -226,19 +231,19 @@
 			</div>
 			<div class="row">
 				<div class="col-lg-12">
-					<p class="results_kubernetes-1-12"><label class="result-label">targetAverageValue:</label> <b>This value should be between 0.6 and 0.9.</b>
+					<p class="results_kubernetes-1-12"><label class="result-label">averageUtilization:</label> <b>This value should be between 60 and 90.</b>
 						<ul>
-							<li>If this value is <b>below 0.6</b>, here is a list of what you can do:<br />
+							<li>If this value is <b>below 60</b>, here is a list of what you can do:<br />
 								<ul>
 									<li>increase the minimum number of instances</li>
 									<li>increase resource to each instance</li>
 									<li>lower application startup time</li>
-									<li>work on your application performances</li>
-									<li>lower your Horizontal Pod Autoscaler Sync Period</li>
 									<li>your loadtest scenario may be too constrictive</li>
+									<li>work on your application performances</li>
+									<li>lower your Horizontal Pod Autoscaler Sync Period (this will increase load on your masters)</li>
 								</ul>
 							</li>
-							<li>If this value is <b>above 0.9</b> it eather means that the load test scenario is not constrictive enough or that you just built the best application ever!</li>
+							<li>If this value is <b>above 90</b> it eather means that the load test scenario is not constrictive enough or that you just built the best application ever!</li>
 						</ul>
 					</p>
 				</div>
