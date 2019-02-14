@@ -122,7 +122,7 @@ class ChartsDesigner {
 						display: true,
 						scaleLabel: {
 							display: true,
-							labelString: 'Number of instances'
+							labelString: 'Load'
 						},
 						min: 0
 					}]
