@@ -123,8 +123,8 @@ function Run() {
 				return FormOchestratorError("Incorrect horizontal pod autoscaler sync period (must be a number > 0)");
 			}
 			var horizontalPodAutoscalerTolerance = parseFloat(document.getElementById("form-k8s-1-11-hpat").value);
-			if (isNaN(horizontalPodAutoscalerTolerance) || horizontalPodAutoscalerTolerance <= 0 || horizontalPodAutoscalerTolerance >= 100) {
-				return FormOchestratorError("Incorrect horizontal pod autoscaler tolerance (must be a number between 0 and 100, both excluded)");
+			if (isNaN(horizontalPodAutoscalerTolerance) || horizontalPodAutoscalerTolerance <= 0 || horizontalPodAutoscalerTolerance >= 1) {
+				return FormOchestratorError("Incorrect horizontal pod autoscaler tolerance (must be a number between 0 and 1, both excluded)");
 			}
 			var horizontalPodAutoscalerUpscaleDelay = parseFloat(document.getElementById("form-k8s-1-11-hpaud").value);
 			if (isNaN(horizontalPodAutoscalerUpscaleDelay) || horizontalPodAutoscalerUpscaleDelay <= 0) {
@@ -149,8 +149,8 @@ function Run() {
 				return FormOchestratorError("Incorrect horizontal pod autoscaler sync period (must be a number > 0)");
 			}
 			var horizontalPodAutoscalerTolerance = parseFloat(document.getElementById("form-k8s-1-12-hpat").value);
-			if (isNaN(horizontalPodAutoscalerTolerance) || horizontalPodAutoscalerTolerance <= 0 || horizontalPodAutoscalerTolerance >= 100) {
-				return FormOchestratorError("Incorrect horizontal pod autoscaler tolerance (must be a number between 0 and 100, both excluded)");
+			if (isNaN(horizontalPodAutoscalerTolerance) || horizontalPodAutoscalerTolerance <= 0 || horizontalPodAutoscalerTolerance >= 1) {
+				return FormOchestratorError("Incorrect horizontal pod autoscaler tolerance (must be a number between 0 and 1, both excluded)");
 			}
 			var horizontalPodAutoscalerInitialReadinessDelay = parseFloat(document.getElementById("form-k8s-1-12-hpaird").value);
 			if (isNaN(horizontalPodAutoscalerInitialReadinessDelay) || horizontalPodAutoscalerInitialReadinessDelay <= 0) {
