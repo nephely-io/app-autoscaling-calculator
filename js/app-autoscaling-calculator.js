@@ -116,7 +116,33 @@ function Run() {
 	var rowsClass = null;
 	var resultCoordonates = null;
 	switch(document.getElementById("form-orchestrator").value) {
-		// kubernetes 1.12
+		// kubernetes until 1.11
+		case "kubernetes-1.11":
+			var horizontalPodAutoscalerSyncPeriod = parseInt(document.getElementById("form-k8s-1-11-hpasp").value);
+			if (isNaN(horizontalPodAutoscalerSyncPeriod) || horizontalPodAutoscalerSyncPeriod <= 0) {
+				return FormOchestratorError("Incorrect horizontal pod autoscaler sync period (must be a number > 0)");
+			}
+			var horizontalPodAutoscalerTolerance = parseFloat(document.getElementById("form-k8s-1-11-hpat").value);
+			if (isNaN(horizontalPodAutoscalerTolerance) || horizontalPodAutoscalerTolerance <= 0 || horizontalPodAutoscalerTolerance >= 100) {
+				return FormOchestratorError("Incorrect horizontal pod autoscaler tolerance (must be a number between 0 and 100, both excluded)");
+			}
+			var horizontalPodAutoscalerUpscaleDelay = parseFloat(document.getElementById("form-k8s-1-11-hpaud").value);
+			if (isNaN(horizontalPodAutoscalerUpscaleDelay) || horizontalPodAutoscalerUpscaleDelay <= 0) {
+				return FormOchestratorError("Incorrect horizontal pod autoscaler upscale delay (must be a number greater than 0)");
+			}
+			var horizontalPodAutoscalerDownscaleDelay = parseFloat(document.getElementById("form-k8s-1-11-hpadd").value);
+			if (isNaN(horizontalPodAutoscalerDownscaleDelay) || horizontalPodAutoscalerDownscaleDelay <= 0) {
+				return FormOchestratorError("Incorrect horizontal pod autoscaler cownscale delay (must be a number greater than 0)");
+			}
+			var scaleUpPercent = AutoScaler.findScaleUpPercentKubernetes_1_11(loadCoordonates, instanceMaxLoad, instanceStartDuration, minNbInstances, horizontalPodAutoscalerSyncPeriod, horizontalPodAutoscalerTolerance, horizontalPodAutoscalerUpscaleDelay, horizontalPodAutoscalerDownscaleDelay);
+
+			rowsClass = "results_kubernetes-1-11";
+			document.getElementById("results_kubernetes-1-11_targetCPUUtilizationPercentage").innerHTML = Math.floor(scaleUpPercent * 1000) / 10;
+
+			resultCoordonates = Kubernetes_1_11.instancesStatusOverTime(loadCoordonates, instanceMaxLoad, scaleUpPercent, instanceStartDuration, minNbInstances, horizontalPodAutoscalerSyncPeriod, horizontalPodAutoscalerTolerance, horizontalPodAutoscalerUpscaleDelay, horizontalPodAutoscalerDownscaleDelay);
+			break;
+
+		// kubernetes from 1.12
 		case "kubernetes-1.12":
 			var horizontalPodAutoscalerSyncPeriod = parseInt(document.getElementById("form-k8s-1-12-hpasp").value);
 			if (isNaN(horizontalPodAutoscalerSyncPeriod) || horizontalPodAutoscalerSyncPeriod <= 0) {
@@ -139,7 +165,7 @@ function Run() {
 			rowsClass = "results_kubernetes-1-12";
 			document.getElementById("results_kubernetes-1-12_targetAverageValue").innerHTML = Math.floor(scaleUpPercent * 1000) / 10;
 
-			resultCoordonates = Kubernetes_1_12.instancesStatusOverTime(loadCoordonates, instanceMaxLoad, scaleUpPercent, instanceStartDuration, minNbInstances, horizontalPodAutoscalerSyncPeriod, horizontalPodAutoscalerTolerance);
+			resultCoordonates = Kubernetes_1_12.instancesStatusOverTime(loadCoordonates, instanceMaxLoad, scaleUpPercent, instanceStartDuration, minNbInstances, horizontalPodAutoscalerSyncPeriod, horizontalPodAutoscalerTolerance, horizontalPodAutoscalerInitialReadinessDelay, horizontalPodAutoscalerCooldownWindow);
 			break;
 
 		default:
@@ -319,7 +345,7 @@ function FormError(error) {
 
 function SelectOrchestrator(selectElement) {
 	// undisplay every rows
-	["kubernetes-1-12"].forEach(element => {
+	["kubernetes-1-11", "kubernetes-1-12"].forEach(element => {
 		var rows = document.getElementsByClassName(element);
 		for (var i=0; i<rows.length; i++) {
 			rows[i].style.display = "none";
@@ -329,6 +355,8 @@ function SelectOrchestrator(selectElement) {
 	// selecting rows to display
 	var rowsClass = null;
 	switch (selectElement.value) {
+		case "kubernetes-1.11": rowsClass = "kubernetes-1-11";
+			break;
 		case "kubernetes-1.12": rowsClass = "kubernetes-1-12";
 			break;
 

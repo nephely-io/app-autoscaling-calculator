@@ -34,11 +34,6 @@ h1 {
 	color: #e49d23;
 	font-size: 45px;
 	margin-bottom: 2rem; /* this adds with the row margin */
-    /* text-shadow:
-    -1px -1px 0 #20445f,
-    1px -1px 0 #20445f,
-    -1px 1px 0 #20445f,
-    1px 1px 0 #20445f; */
 }
 h2 {
 	color: #8b7356;
@@ -163,7 +158,7 @@ section#form .information-row {
 section#form .error-row {
 	display: none;
 }
-section#form .kubernetes-1-6,
+section#form .kubernetes-1-11,
 section#form .kubernetes-1-12 {
 	display: none;
 }
@@ -193,6 +188,7 @@ section#results canvas {
 	height: auto;
 	background-color: #ffffff;
 }
+section#results .results_kubernetes-1-11,
 section#results .results_kubernetes-1-12 {
 	display: none;
 }

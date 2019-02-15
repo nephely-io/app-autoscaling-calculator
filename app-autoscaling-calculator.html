@@ -137,10 +137,40 @@
 				<div class="col-lg-2">
 					<select id="form-orchestrator" onchange="SelectOrchestrator(this);">
 						<option selected value="null">-- Select --</option>
-						<option value="kubernetes-1.12">Kubernetes (>= 1.12)</option>
+						<option value="kubernetes-1.11">Kubernetes (&lt; 1.12)</option>
+						<option value="kubernetes-1.12">Kubernetes (&gt;= 1.12)</option>
 					</select>
 				</div>
 			</div>
+			<!-- Kubernetes 1.11 -->
+			<div class="row kubernetes-1-11 information-row">
+				<div class="col-lg-12">
+					Following information are set on the <a href="https://v1-11.docs.kubernetes.io/docs/reference/command-line-tools-reference/kube-controller-manager/" target="_blank">kube-controller-manager</a> service.<br />
+					For more information about Kubernetes horizontal pod auto-scaling, please refer to the offcicial <a href="https://v1-11.docs.kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/" target="_blank">documentation</a>.<br />
+					Beware that defaults values specified in the documentation are incorrects (but ones specified here are, you can check the <a href="https://github.com/kubernetes/kubernetes/blob/release-1.11/cmd/kube-controller-manager/app/options/options_test.go#L191" target="_blank">source code</a>).
+				</div>
+			</div>
+			<div class="row kubernetes-1-11">
+				<div class="col-lg-4">Horizontal pod autoscaler sync period:</div>
+				<div class="col-lg-2"><input type="number" min="1" step="1" id="form-k8s-1-11-hpasp" value="45" /></div>
+				<div class="col-lg-6 from-information">in seconds (defaults to 45 seconds)</div>
+			</div>
+			<div class="row kubernetes-1-11">
+				<div class="col-lg-4">Horizontal pod autoscaler tolerance:</div>
+				<div class="col-lg-2"><input type="number" min="0" max="100" step="0.01" id="form-k8s-1-11-hpat" value="0.1" /></div>
+				<div class="col-lg-6 from-information">in percent (defaults to 0.1%)</div>
+			</div>
+			<div class="row kubernetes-1-11">
+				<div class="col-lg-4">Horizontal pod autoscaler upscale delay:</div>
+				<div class="col-lg-2"><input type="number" min="1" step="1" id="form-k8s-1-11-hpaud" value="60" /></div>
+				<div class="col-lg-6 from-information">in seconds (defaults to 1 minutes)</div>
+			</div>
+			<div class="row kubernetes-1-11">
+				<div class="col-lg-4">Horizontal pod autoscaler downscale delay:</div>
+				<div class="col-lg-2"><input type="number" min="1" step="1" id="form-k8s-1-11-hpadd" value="120" /></div>
+				<div class="col-lg-6 from-information">in seconds (defaults to 2 minutes)</div>
+			</div>
+			<!-- Kubernetes 1.12 -->
 			<div class="row kubernetes-1-12 information-row">
 				<div class="col-lg-12">
 					Following information are set on the <a href="https://kubernetes.io/docs/reference/command-line-tools-reference/kube-controller-manager/" target="_blank">kube-controller-manager</a> service.<br />
@@ -216,6 +246,7 @@
 			</div>
 			<div class="row">
 				<div class="col-lg-4">
+					<span class="results_kubernetes-1-11"><label class="result-label">targetCPUUtilizationPercentage:</label>&nbsp;<span id="results_kubernetes-1-11_targetCPUUtilizationPercentage" class="result-value"></span> (%)</span>
 					<span class="results_kubernetes-1-12"><label class="result-label">averageUtilization:</label>&nbsp;<span id="results_kubernetes-1-12_targetAverageValue" class="result-value"></span> (%)</span>
 					<label class="result-label">Maximum number of instances:</label>&nbsp;<span id="results_max-nb-instance" class="result-value"></span><br />
 					<label class="result-label">Maximum load per instance:</label>&nbsp;<span id="results_max-instance-load" class="result-value"></span><br />
@@ -229,9 +260,9 @@
 			<div class="row">
 				<div class="col-lg-12"><h2>How to interpret the results?</h2></div>
 			</div>
-			<div class="row">
+			<div class="row results_kubernetes-1-11">
 				<div class="col-lg-12">
-					<p class="results_kubernetes-1-12"><label class="result-label">averageUtilization:</label> <b>This value should be between 60 and 90.</b>
+					<p><label class="result-label">targetCPUUtilizationPercentage:</label> <b>This value should be between 60 and 90.</b>
 						<ul>
 							<li>If this value is <b>below 60</b>, here is a list of what you can do:<br />
 								<ul>
@@ -243,7 +274,26 @@
 									<li>lower your Horizontal Pod Autoscaler Sync Period (this will increase load on your masters)</li>
 								</ul>
 							</li>
-							<li>If this value is <b>above 90</b> it eather means that the load test scenario is not constrictive enough or that you just built the best application ever!</li>
+							<li>If this value is <b>above 90</b>, it eather means that the load test scenario is not constrictive enough, or that you've just built the best application ever!</li>
+						</ul>
+					</p>
+				</div>
+			</div>
+			<div class="row results_kubernetes-1-12">
+				<div class="col-lg-12">
+					<p><label class="result-label">averageUtilization:</label> <b>This value should be between 60 and 90.</b>
+						<ul>
+							<li>If this value is <b>below 60</b>, here is a list of what you can do:<br />
+								<ul>
+									<li>increase the minimum number of instances</li>
+									<li>increase resource to each instance</li>
+									<li>lower application startup time</li>
+									<li>your loadtest scenario may be too constrictive</li>
+									<li>work on your application performances</li>
+									<li>lower your Horizontal Pod Autoscaler Sync Period (this will increase load on your masters)</li>
+								</ul>
+							</li>
+							<li>If this value is <b>above 90</b>, it eather means that the load test scenario is not constrictive enough, or that you've just built the best application ever!</li>
 						</ul>
 					</p>
 				</div>
