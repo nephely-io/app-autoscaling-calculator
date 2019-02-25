@@ -145,7 +145,7 @@
 			<!-- Kubernetes 1.11 -->
 			<div class="row kubernetes-1-11 information-row">
 				<div class="col-lg-12">
-					Following information are set on the <a href="https://v1-11.docs.kubernetes.io/docs/reference/command-line-tools-reference/kube-controller-manager/" target="_blank">kube-controller-manager</a> service.<br />
+					Following parameters are set on the <a href="https://v1-11.docs.kubernetes.io/docs/reference/command-line-tools-reference/kube-controller-manager/" target="_blank">kube-controller-manager</a> service.<br />
 					For more information about Kubernetes horizontal pod auto-scaling, please refer to the offcicial <a href="https://v1-11.docs.kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/" target="_blank">documentation</a>.<br />
 					Beware that defaults values specified in the documentation are incorrects (but ones specified here are, you can check the <a href="https://github.com/kubernetes/kubernetes/blob/release-1.11/cmd/kube-controller-manager/app/options/options_test.go#L191" target="_blank">source code</a>).
 				</div>
@@ -173,7 +173,7 @@
 			<!-- Kubernetes 1.12 -->
 			<div class="row kubernetes-1-12 information-row">
 				<div class="col-lg-12">
-					Following information are set on the <a href="https://kubernetes.io/docs/reference/command-line-tools-reference/kube-controller-manager/" target="_blank">kube-controller-manager</a> service.<br />
+					Following parameters are set on the <a href="https://kubernetes.io/docs/reference/command-line-tools-reference/kube-controller-manager/" target="_blank">kube-controller-manager</a> service.<br />
 					For more information about Kubernetes horizontal pod auto-scaling, please refer to the offcicial <a href="https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/" target="_blank">documentation</a>.
 				</div>
 			</div>
@@ -235,30 +235,32 @@
 	<!-- Results -->
 	<section id="results" class="bg-blue">
 		<div class="container">
-				<!-- results -->
+			<!-- hypothesis -->
+			<div class="row">
+				<div class="col-lg-12"><h2>Hypothesis</h2></div>
+			</div>
+			<div class="row">
+				<div id="chart-loadfunctions-row" class="col-lg-6"><canvas id="chart-loadfunctions"></canvas></div>
+				<div id="chart-load-time-row" class="col-lg-6"><canvas id="chart-load-time"></canvas></div>
+			</div>
+			<!-- results -->
 			<div class="row">
 				<div class="col-lg-12"><h2>Results</h2></div>
 			</div>
 			<div class="row">
-				<div class="col-lg-1"></div>
-				<div id="chart-loadfunctions-row" class="col-lg-10"><canvas id="chart-loadfunctions"></canvas></div>
-				<div class="col-lg-1"></div>
+				<div id="chart-results-row" class="col-lg-12"><canvas id="chart-results"></canvas></div>
 			</div>
 			<div class="row">
 				<div class="col-lg-4">
-					<span class="results_kubernetes-1-11"><label class="result-label">targetCPUUtilizationPercentage:</label>&nbsp;<span id="results_kubernetes-1-11_targetCPUUtilizationPercentage" class="result-value"></span> (%)</span>
+					<span class="results_kubernetes-1-11"><label class="result-label">targetCPUUtilizationPercentage:</label>&nbsp;<span id="results_kubernetes-1-11_targetCPUUtilizationPercentage" class="result-value"></span> %</span>
 					<span class="results_kubernetes-1-12"><label class="result-label">averageUtilization:</label>&nbsp;<span id="results_kubernetes-1-12_targetAverageValue" class="result-value"></span> (%)</span>
 					<label class="result-label">Maximum number of instances:</label>&nbsp;<span id="results_max-nb-instance" class="result-value"></span><br />
 					<label class="result-label">Maximum load per instance:</label>&nbsp;<span id="results_max-instance-load" class="result-value"></span><br />
 				</div>
-				<div id="chart-load-time-row" class="col-lg-8"><canvas id="chart-load-time"></canvas></div>
-			</div>
-			<div class="row">
-				<div id="chart-results-row" class="col-lg-12"><canvas id="chart-results"></canvas></div>
 			</div>
 			<!-- How to interpret -->
 			<div class="row">
-				<div class="col-lg-12"><h2>How to interpret this results?</h2></div>
+				<div class="col-lg-12"><h2>How to interpret those results?</h2></div>
 			</div>
 			<div class="row results_kubernetes-1-11">
 				<div class="col-lg-12">
@@ -300,7 +302,7 @@
 			</div>
 			<div class="row">
 				<div class="col-lg-12">
-					<span class="result-value"><i class="fas fa-exclamation-triangle warning"></i> We remind you that these results do not (yet) take into account the time to spawn new VM instances (if relevant).</span>
+					<span class="result-value"><i class="fas fa-exclamation-triangle warning"></i> We remind you that these results do not take into account the time to spawn new VM instances (if relevant).</span>
 				</div>
 			</div>
 			<!-- back to top -->
