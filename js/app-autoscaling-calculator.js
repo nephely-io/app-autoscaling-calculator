@@ -27,6 +27,14 @@ function Run() {
 		document.getElementById(errorDivIds[i]).style.display = "none";
 	}
 	document.getElementById("loading-gif").style.display = "flex";
+	// hiding previous results
+	let classNames = ["results_kubernetes-1-11", "results_kubernetes-1-12", "results_marathon-autoscaler"];
+	for (let i=0; i<classNames.length; i++) {
+		let rows = document.getElementsByClassName(classNames[i]);
+		for (let j=0; j<rows.length; j++) {
+			rows[j].style.display = "none"; // back to default
+		}
+	}
 
 	/* FORM */
 	// application
@@ -43,6 +51,11 @@ function Run() {
 		return FormApplicationError("Incorrect minimum number of instances (must be a number > 0)");
 	}
 	let appConfig = new ApplicationConfig(instanceMaxLoad, instanceStartDuration, minNbInstances);
+	// load function
+	let loadFunctionDuration = parseInt(document.getElementById("form-loadfunction-duration").value);
+	if (isNaN(loadFunctionDuration) || loadFunctionDuration <= 0) {
+		return FormLoadFunctionError("Incorrect duration of the load function (must be a number > 0)");
+	}
 	// load test
 	let loadDuration = parseInt(document.getElementById("form-loadtest-duration").value);
 	if (isNaN(loadDuration) || loadDuration <= 0) {
@@ -64,7 +77,6 @@ function Run() {
 	if (nbIterations < nbPointSecond * loadDuration){
 		FormWarning("The number of iteration for the Reimann sum is too low.<br />Should be a minimum of: " + (nbPointSecond * loadDuration));
 	}
-	let nbCoordonates = Math.ceil(loadDuration * nbPointSecond);
 	
 	// parsing load function
 	let loadFunctions = [];
@@ -93,7 +105,7 @@ function Run() {
 	if (totalPercent != 100) {
 		return FormError("Load functions user percent total is not 100%.");
 	}
-	ChartsDesigner.DrawLoadFunctions('chart-loadfunctions', loadFunctions, nbPointSecond);
+	ChartsDesigner.DrawLoadFunctions('chart-loadfunctions', loadFunctions, nbPointSecond, loadFunctionDuration);
 	let userLoadFunction = new UserLoadFunction(loadFunctions);
 
 	/* COMPUTING */
@@ -101,13 +113,13 @@ function Run() {
 	let loadCoordonates = null;
 	switch(document.getElementById("form-loadtest-distribution").value) {
 		case "gauss":
-			loadCoordonates = LoadCalculator.Gauss(nbUsers, userLoadFunction, loadDuration, nbCoordonates, nbIterations);
+			loadCoordonates = LoadCalculator.Gauss(nbUsers, userLoadFunction, Math.ceil(loadDuration * 3/2) + loadFunctionDuration, nbPointSecond, nbIterations);
 			break;
 		case "constant":
-			loadCoordonates = LoadCalculator.Constant(nbUsers, userLoadFunction, loadDuration, nbCoordonates, nbIterations);
+			loadCoordonates = LoadCalculator.Constant(nbUsers, userLoadFunction, loadDuration + loadFunctionDuration, nbPointSecond, nbIterations);
 			break;
 		case "linear":
-			loadCoordonates = LoadCalculator.Linear(nbUsers, userLoadFunction, loadDuration, nbCoordonates, nbIterations);
+			loadCoordonates = LoadCalculator.Linear(nbUsers, userLoadFunction, loadDuration + loadFunctionDuration, nbPointSecond, nbIterations);
 			break;
 	}
 	// displaying load chart
@@ -129,18 +141,18 @@ function Run() {
 			}
 			var horizontalPodAutoscalerUpscaleDelay = parseFloat(document.getElementById("form-k8s-1-11-hpaud").value);
 			if (isNaN(horizontalPodAutoscalerUpscaleDelay) || horizontalPodAutoscalerUpscaleDelay <= 0) {
-				return FormOchestratorError("Incorrect horizontal pod autoscaler upscale delay (must be a number greater than 0)");
+				return FormOchestratorError("Incorrect horizontal pod autoscaler upscale delay (must be a number > 0)");
 			}
 			var horizontalPodAutoscalerDownscaleDelay = parseFloat(document.getElementById("form-k8s-1-11-hpadd").value);
 			if (isNaN(horizontalPodAutoscalerDownscaleDelay) || horizontalPodAutoscalerDownscaleDelay <= 0) {
-				return FormOchestratorError("Incorrect horizontal pod autoscaler cownscale delay (must be a number greater than 0)");
+				return FormOchestratorError("Incorrect horizontal pod autoscaler cownscale delay (must be a number > 0)");
 			}
 			var k8sConfig = new Kubernetes_1_11Config(horizontalPodAutoscalerSyncPeriod, horizontalPodAutoscalerTolerance, horizontalPodAutoscalerUpscaleDelay, horizontalPodAutoscalerDownscaleDelay);
-			var scaleUpPercent = Kubernetes_1_11.resolveScaleUpPercent(loadCoordonates, appConfig, k8sConfig);
-			results = Kubernetes_1_11.calculateStates(loadCoordonates, appConfig, k8sConfig, scaleUpPercent);
+			appConfig.scaleUpPercent = Kubernetes_1_11.resolveScaleUpPercent(loadCoordonates, appConfig, k8sConfig);
+			results = Kubernetes_1_11.calculateStates(loadCoordonates, appConfig, k8sConfig);
 
 			rowsClass = "results_kubernetes-1-11";
-			document.getElementById("results_kubernetes-1-11_targetCPUUtilizationPercentage").innerHTML = Math.floor(scaleUpPercent * 1000) / 10;
+			document.getElementById("results_kubernetes-1-11_targetCPUUtilizationPercentage").innerHTML = Math.floor(appConfig.scaleUpPercent * 1000) / 10;
 			break;
 
 		// kubernetes from 1.12
@@ -155,29 +167,50 @@ function Run() {
 			}
 			var horizontalPodAutoscalerInitialReadinessDelay = parseFloat(document.getElementById("form-k8s-1-12-hpaird").value);
 			if (isNaN(horizontalPodAutoscalerInitialReadinessDelay) || horizontalPodAutoscalerInitialReadinessDelay <= 0) {
-				return FormOchestratorError("Incorrect horizontal pod autoscaler readiness delay (must be a number greater than 0)");
+				return FormOchestratorError("Incorrect horizontal pod autoscaler readiness delay (must be a number > 0)");
 			}
 			var horizontalPodAutoscalerCooldownWindow = parseFloat(document.getElementById("form-k8s-1-12-hpadcw").value);
 			if (isNaN(horizontalPodAutoscalerCooldownWindow) || horizontalPodAutoscalerCooldownWindow <= 0) {
-				return FormOchestratorError("Incorrect horizontal pod autoscaler cooldown window (must be a number greater than 0)");
+				return FormOchestratorError("Incorrect hoAS_COOL_DOWN_FACTORrizontal pod autoscaler cooldown window (must be a number > 0)");
 			}
 			var k8sConfig = new Kubernetes_1_12Config(horizontalPodAutoscalerSyncPeriod, horizontalPodAutoscalerTolerance, horizontalPodAutoscalerInitialReadinessDelay, horizontalPodAutoscalerCooldownWindow);
-			var scaleUpPercent = Kubernetes_1_12.resolveScaleUpPercent(loadCoordonates, appConfig, k8sConfig);
-			results = Kubernetes_1_12.calculateStates(loadCoordonates, appConfig, k8sConfig, scaleUpPercent);
+			appConfig.scaleUpPercent = Kubernetes_1_12.resolveScaleUpPercent(loadCoordonates, appConfig, k8sConfig);
+			results = Kubernetes_1_12.calculateStates(loadCoordonates, appConfig, k8sConfig);
 
 			rowsClass = "results_kubernetes-1-12";
-			document.getElementById("results_kubernetes-1-12_targetAverageValue").innerHTML = Math.floor(scaleUpPercent * 1000) / 10;
+			document.getElementById("results_kubernetes-1-12_targetAverageValue").innerHTML = Math.floor(appConfig.scaleUpPercent * 1000) / 10;
+			break;
+
+		// Mesosphere Marathon
+		case "marathon-autoscaler":
+			var asSynch = parseInt(document.getElementById("form-msm-sync").value);
+			if (isNaN(asSynch) || asSynch <= 0) {
+				return FormOchestratorError("Incorrect interval period (must be a number > 0)");
+			}
+			var asMultiply = parseFloat(document.getElementById("form-msm-mult").value);
+			if (isNaN(asMultiply) || asMultiply <= 1) {
+				return FormOchestratorError("Incorrect horizontal autoscale multiplier (must be a number > 1)");
+			}
+			var asSUF = parseFloat(document.getElementById("form-msm-suf").value);
+			if (isNaN(asSUF) || asSUF <= 0) {
+				return FormOchestratorError("Incorrect scale-up factor (must be a number > 0)");
+			}
+			var asSDF = parseFloat(document.getElementById("form-msm-sdf").value);
+			if (isNaN(asSDF) || asSDF <= 0) {
+				return FormOchestratorError("Incorrect scale-down factor (must be a number > 0)");
+			}
+			var msmConfig = new MarathonAutoScaleConfig(asSynch, asMultiply, asSUF, asSDF);
+			appConfig.scaleUpPercent = MarathonAutoScale.resolveScaleUpPercent(loadCoordonates, appConfig, msmConfig);
+			appConfig.scaleDownPercent = MarathonAutoScale.calculateScaleDownPercent(appConfig.minNbInstances, msmConfig.autoscaleMultiplier, appConfig.scaleUpPercent);
+			results = MarathonAutoScale.calculateStates(loadCoordonates, appConfig, msmConfig);
+
+			rowsClass = "results_marathon-autoscaler";
+			document.getElementById("results_marathon-autoscaler_max-range").innerHTML = Math.floor(appConfig.scaleUpPercent * 1000) / 10;
+			document.getElementById("results_marathon-autoscaler_min-range").innerHTML = Math.floor(appConfig.scaleDownPercent * 1000) / 10;
 			break;
 
 		default:
 			return FormOchestratorError("You must select an orchestrator");
-	}
-	// displaying orchestrator results rows
-	if (rowsClass != null) {
-		let rows = document.getElementsByClassName(rowsClass);
-		for (let i=0; i<rows.length; i++) {
-			rows[i].style.display = "block"; // back to default
-		}
 	}
 
 	// displaying metrics results
@@ -186,6 +219,12 @@ function Run() {
 
 	// drawing result graphs
 	ChartsDesigner.DrawStates('chart-results', results.states);
+
+	// displaying orchestrator results rows
+	let rows = document.getElementsByClassName(rowsClass);
+	for (let i=0; i<rows.length; i++) {
+		rows[i].style.display = "block"; // back to default
+	}
 
 	// showing results
 	document.getElementById("loading-gif").style.display = "none";
@@ -336,7 +375,7 @@ function FormError(error) {
 
 function SelectOrchestrator(selectElement) {
 	// undisplay every rows
-	["kubernetes-1-11", "kubernetes-1-12"].forEach(element => {
+	["kubernetes-1-11", "kubernetes-1-12", "marathon-autoscaler"].forEach(element => {
 		let rows = document.getElementsByClassName(element);
 		for (let i=0; i<rows.length; i++) {
 			rows[i].style.display = "none";
@@ -349,6 +388,8 @@ function SelectOrchestrator(selectElement) {
 		case "kubernetes-1.11": rowsClass = "kubernetes-1-11";
 			break;
 		case "kubernetes-1.12": rowsClass = "kubernetes-1-12";
+			break;
+		case "marathon-autoscaler": rowsClass = "marathon-autoscaler";
 			break;
 
 		default: break;

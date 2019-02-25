@@ -37,6 +37,9 @@ h1 {
 }
 h2 {
 	color: #8b7356;
+	margin-top: 0;
+}
+h2.margin {
 	margin-top: 1.5rem;
 }
 h3 {
@@ -159,7 +162,8 @@ section#form .error-row {
 	display: none;
 }
 section#form .kubernetes-1-11,
-section#form .kubernetes-1-12 {
+section#form .kubernetes-1-12,
+section#form .marathon-autoscaler {
 	display: none;
 }
 section#form .buttons .btn {

@@ -53,8 +53,8 @@
 				<div class="col-lg-12"><h3>Your application</h3></div>
 			</div>
 			<div class="row information-row"><div class="col-lg-12">
-				The instance start duration correspond to the time from when the scale-up is trigger to the time traffic get routed.<br />
-				The number of instances will be considered stable at the begining of the load test (and can be higher than the minimum number of instances).
+				The instance start duration correspond to the time from <u>when the scale-up is trigger to the time traffic get routed</u>.<br />
+				The orchestrator will be considered stable at the begining of the load test (load has been constant).
 			</div></div>
 			<div id="form-app-error-row" class="row error-row">
 				<div class="col-lg-12"><span id="form-app-error" class="error"></span></div>
@@ -91,7 +91,7 @@
 				</div>
 				<div id="form-loadfunction-row0" class="row loadfunction">
 					<div class="col-lg-3"><span>Pourcentage of user: </span><input type="number" min="0.1" max="100" step="0.1" id="form-loadfunction-user-percent0" value="100" /><span>%</span></div>
-					<div class="col-lg-2"><span>JavaScript function:</span></div>
+					<div class="col-form-loadfunction-durationlg-2"><span>JavaScript function:</span></div>
 					<div class="col-lg-6"><textarea id="form-loadfunction-function0" class="form-control">function(time) {return 0;}</textarea></div>
 					<div class="col-lg-1 text-center"><input class="btn btn-secondary" onclick="LoadFunctionRemoveRow(0);" value="-" type="button"></div>
 				</div>
@@ -99,9 +99,20 @@
 			<div class="row">
 				<div class="col-lg-12 text-right"><input type="button" class="btn btn-primary" onclick="LoadFunctionAddRow();" value="+" /></div>
 			</div>
+			<div class="row">
+				<div class="col-lg-3">Load function duration:</div>
+				<div class="col-lg-2"><input type="number" min="1" step="1" id="form-loadfunction-duration" /></div>
+				<div class="col-lg-7 from-information">in seconds</div>
+			</div>
 			<!-- loadtest -->
 			<div class="row">
 				<div class="col-lg-12"><h3>LoadTest</h3></div>
+			</div>
+			<div class="row information-row">
+				<div class="col-lg-12">
+					When using a Gaussian user distribution, the load test duration correspond to the duration during which 95.4% of users are performing the function.<br />
+					Please refer to the article for a more detailed explication.
+				</div>
 			</div>
 			<div id="form-loadtest-error-row" class="row error-row">
 				<div class="col-lg-12"><span id="form-loadtest-error" class="error"></span></div>
@@ -139,6 +150,7 @@
 						<option selected value="null">-- Select --</option>
 						<option value="kubernetes-1.11">Kubernetes (&lt; 1.12)</option>
 						<option value="kubernetes-1.12">Kubernetes (&gt;= 1.12)</option>
+						<option value="marathon-autoscaler">Mesosphere DC/OS</option>
 					</select>
 				</div>
 			</div>
@@ -197,6 +209,29 @@
 				<div class="col-lg-2"><input type="number" min="1" step="1" id="form-k8s-1-12-hpadcw" value="300" /></div>
 				<div class="col-lg-5 from-information">in seconds (defaults to 5 minutes)</div>
 			</div>
+			<!-- Mesosphere / Marathon AutoScaler -->
+			<div class="row marathon-autoscaler information-row">
+				<div class="col-lg-12">
+					For more information about the Marathon AutoScaler on Mesosphere DC/OS, please refer to the <a href="https://docs.mesosphere.com/1.12/tutorials/autoscaling/" target="_blank">official documentation</a>, or to the <a href="https://github.com/mesosphere/marathon-autoscale" target="_blank">GitHub repository</a>.
+				</div>
+			</div>
+			<div class="row marathon-autoscaler">
+				<div class="col-lg-3">Interval:</div>
+				<div class="col-lg-2"><input type="number" min="1" step="1" id="form-msm-sync" value="15" /></div>
+				<div class="col-lg-6 from-information">in seconds</div>
+			</div>
+			<div class="row marathon-autoscaler">
+				<div class="col-lg-3">Autoscale multiplier:</div>
+				<div class="col-lg-2"><input type="number" min="1" step="0.1" id="form-msm-mult" value="1.5" /></div>
+			</div>
+			<div class="row marathon-autoscaler">
+				<div class="col-lg-3">Scale-up factor:</div>
+				<div class="col-lg-2"><input type="number" min="1" step="1" id="form-msm-suf" value="3" /></div>
+			</div>
+			<div class="row marathon-autoscaler">
+				<div class="col-lg-3">Scale-down factor:</div>
+				<div class="col-lg-2"><input type="number" min="1" step="1" id="form-msm-sdf" value="5" /></div>
+			</div>
 			<!-- computation -->
 			<div class="row">
 				<div class="col-lg-12"><h3>Computation</h3></div>
@@ -245,7 +280,7 @@
 			</div>
 			<!-- results -->
 			<div class="row">
-				<div class="col-lg-12"><h2>Results</h2></div>
+				<div class="col-lg-12"><h2 class="margin">Results</h2></div>
 			</div>
 			<div class="row">
 				<div id="chart-results-row" class="col-lg-12"><canvas id="chart-results"></canvas></div>
@@ -254,22 +289,24 @@
 				<div class="col-lg-4">
 					<span class="results_kubernetes-1-11"><label class="result-label">targetCPUUtilizationPercentage:</label>&nbsp;<span id="results_kubernetes-1-11_targetCPUUtilizationPercentage" class="result-value"></span> %</span>
 					<span class="results_kubernetes-1-12"><label class="result-label">averageUtilization:</label>&nbsp;<span id="results_kubernetes-1-12_targetAverageValue" class="result-value"></span> (%)</span>
+					<span class="results_marathon-autoscaler"><label class="result-label">AS_MAX_RANGE:</label>&nbsp;<span id="results_marathon-autoscaler_max-range" class="result-value"></span> (%)</span>
+					<span class="results_marathon-autoscaler"><label class="result-label">AS_MIN_RANGE:</label>&nbsp;<span id="results_marathon-autoscaler_min-range" class="result-value"></span> (%, this is a maximum)</span>
 					<label class="result-label">Maximum number of instances:</label>&nbsp;<span id="results_max-nb-instance" class="result-value"></span><br />
 					<label class="result-label">Maximum load per instance:</label>&nbsp;<span id="results_max-instance-load" class="result-value"></span><br />
 				</div>
 			</div>
 			<!-- How to interpret -->
 			<div class="row">
-				<div class="col-lg-12"><h2>How to interpret those results?</h2></div>
+				<div class="col-lg-12"><h2 class="margin">How to interpret those results?</h2></div>
 			</div>
 			<div class="row results_kubernetes-1-11">
 				<div class="col-lg-12">
-					<p><label class="result-label">targetCPUUtilizationPercentage:</label> <b>This value should be between 60 and 90 (the higher the better).</b>
+					<p><label class="result-label">targetCPUUtilizationPercentage:</label> <b>This value should be between 70 and 90 (the higher the better).</b>
 						<ul>
-							<li>If this value is <b>below 60</b>, here is a list of what you can do:<br />
+							<li>If this value is <b>below 70</b>, here is a list of what you can do:<br />
 								<ul>
 									<li>increase the minimum number of instances</li>
-									<li>increase resource to each instance</li>
+									<li>increase resources to each instance</li>
 									<li>lower application startup time</li>
 									<li>your loadtest scenario may be too constrictive</li>
 									<li>work on your application performances</li>
@@ -283,12 +320,12 @@
 			</div>
 			<div class="row results_kubernetes-1-12">
 				<div class="col-lg-12">
-					<p><label class="result-label">averageUtilization:</label> <b>This value should be between 60 and 90 (the higher the better).</b>
+					<p><label class="result-label">averageUtilization:</label> <b>This value should be between 70 and 90 (the higher the better).</b>
 						<ul>
-							<li>If this value is <b>below 60</b>, here is a list of what you can do:<br />
+							<li>If this value is <b>below 70</b>, here is a list of what you can do:<br />
 								<ul>
 									<li>increase the minimum number of instances</li>
-									<li>increase resource to each instance</li>
+									<li>increase resources to each instance</li>
 									<li>lower application startup time</li>
 									<li>your loadtest scenario may be too constrictive</li>
 									<li>work on your application performances</li>
@@ -300,14 +337,47 @@
 					</p>
 				</div>
 			</div>
+			<div class="row results_marathon-autoscaler">
+				<div class="col-lg-12">
+					<p><label class="result-label">AS_MAX_RANGE:</label> <b>This value should be between 70 and 90 (the higher the better).</b>
+						<ul>
+							<li>If this value is <b>below 70</b>, here is a list of what you can do:<br />
+								<ul>
+									<li>increase the minimum number of instances</li>
+									<li>increase resources to each instance</li>
+									<li>decrease the scale up factor</li>
+									<li>lower application startup time</li>
+									<li>increase the autoscale multiplier</li>
+									<li>your loadtest scenario may be too constrictive</li>
+									<li>work on your application performances</li>
+									<li>lower your synchronisation interval (this will increase load of the marathon-autoscaler)</li>
+								</ul>
+							</li>
+							<li>If this value is <b>above 90</b>, it eather means that the load test scenario is not constrictive enough, or that you've just built the best application ever!</li>
+						</ul>
+					</p>
+					<p><label class="result-label">AS_MIN_RANGE:</label> <b>This value should be between 35 and 55 (the higher the better).</b>
+						<ul>
+							<li>If this value is <b>below 35</b>, here is a list of what you can do:<br />
+								<ul>
+									<li>increase the minimum number of instances</li>
+									<li>decrease the autoscale multiplier</li>
+									<li>find a way to increase AS_MAX_RANGE</li>
+								</ul>
+							</li>
+							<li>If this value is <b>above 55</b>, well done!</li>
+						</ul>
+					</p>
+				</div>
+			</div>
 			<div class="row">
 				<div class="col-lg-12">
-					<span class="result-value"><i class="fas fa-exclamation-triangle warning"></i> We remind you that these results do not take into account the time to spawn new VM instances (if relevant).</span>
+					<span class="result-value"><b class="fas fa-exclamation-triangle warning"></b> <i>We remind you that these results do not take into account the time to spawn new VM instances (if relevant).</i></span>
 				</div>
 			</div>
 			<!-- back to top -->
 			<div class="row text-center">
-				<div class="col-lg-12"><a class="js-scroll-trigger" href="#form"><i class="fas fa-arrow-circle-up"></i> Back to top</a></div>
+				<div class="col-lg-12"><a class="js-scroll-trigger" href="#form"><b class="fas fa-arrow-circle-up"></b> Back to top</a></div>
 			</div>
 		</div>
 	</section>

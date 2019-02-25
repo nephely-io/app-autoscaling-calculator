@@ -1,17 +1,16 @@
 /* charts designer */
 class ChartsDesigner {
-	static DrawLoadFunctions(canvasId, loadFunctions, nbPointSecond) {
+	static DrawLoadFunctions(canvasId, loadFunctions, nbPointSecond, loadFunctionDuration) {
 	// clearing canvas
 	ChartsDesigner._resetCanvas(canvasId);
 
 	// calculating load functions coordonates
 	var inTime = -5;
-	var outTime = 30;
 	var lineColors = ["#e49d23", "#8b7356", "#904349", "#20445f", "#aecff0"];
 	var datasets = [];
 	for (var i=0; i<loadFunctions.length; i++) {
 		var data = [];
-		for (var j=inTime; j<=outTime; j+= 1/nbPointSecond) {
+		for (var j=inTime; j<=loadFunctionDuration; j+= 1/nbPointSecond) {
 			data.push(loadFunctions[i].func(j));
 		}
 		var color = lineColors[i % lineColors.length];
@@ -31,7 +30,7 @@ class ChartsDesigner {
 
 	// labels
 	var labels = [];
-	for (var j=inTime; j<=outTime; j+= 1/nbPointSecond) {
+	for (var j=inTime; j<=loadFunctionDuration; j+= 1/nbPointSecond) {
 		labels.push(j);
 	}
 
