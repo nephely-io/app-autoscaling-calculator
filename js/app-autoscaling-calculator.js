@@ -8,7 +8,7 @@ function OnLoad() {
 	// Smooth scrolling using jQuery easing
 	$('a.js-scroll-trigger[href*="#"]:not([href="#"])').click(function() {
 		if (location.pathname.replace(/^\//, '') == this.pathname.replace(/^\//, '') && location.hostname == this.hostname) {
-			var target = $(this.hash);
+			let target = $(this.hash);
 			target = target.length ? target : $('[name=' + this.hash.slice(1) + ']');
 			if (target.length) {
 				$('html, body').animate({
@@ -22,60 +22,61 @@ function OnLoad() {
 
 function Run() {
 	// hiding results & displaying loading gif
-	var errorDivIds = ["results", "form-warning", "form-error", "form-app-error-row", "form-loadtest-error-row", "form-orchestrator-error-row", "form-computation-error-row"];
-	for (var i=0; i<errorDivIds.length; i++) {
+	let errorDivIds = ["results", "form-warning", "form-error", "form-app-error-row", "form-loadtest-error-row", "form-orchestrator-error-row", "form-computation-error-row"];
+	for (let i=0; i<errorDivIds.length; i++) {
 		document.getElementById(errorDivIds[i]).style.display = "none";
 	}
 	document.getElementById("loading-gif").style.display = "flex";
 
 	/* FORM */
 	// application
-	var instanceMaxLoad = parseFloat(document.getElementById("form-instance-max-load").value);
+	let instanceMaxLoad = parseFloat(document.getElementById("form-instance-max-load").value);
 	if (isNaN(instanceMaxLoad) || instanceMaxLoad <= 0) {
 		return FormApplicationError("Incorrect instance max load (must be a number > 0)");
 	}
-	var instanceStartDuration = parseInt(document.getElementById("form-instance-start-duration").value);
+	let instanceStartDuration = parseInt(document.getElementById("form-instance-start-duration").value);
 	if (isNaN(instanceStartDuration) || instanceStartDuration <= 0) {
 		return FormApplicationError("Incorrect instance start duration (must be a nmber > 0)");
 	}
-	var minNbInstances = parseInt(document.getElementById("form-min-number-instances").value);
+	let minNbInstances = parseInt(document.getElementById("form-min-number-instances").value);
 	if (isNaN(minNbInstances) || minNbInstances <= 0) {
 		return FormApplicationError("Incorrect minimum number of instances (must be a number > 0)");
 	}
+	let appConfig = new ApplicationConfig(instanceMaxLoad, instanceStartDuration, minNbInstances);
 	// load test
-	var loadDuration = parseInt(document.getElementById("form-loadtest-duration").value);
+	let loadDuration = parseInt(document.getElementById("form-loadtest-duration").value);
 	if (isNaN(loadDuration) || loadDuration <= 0) {
 		return FormLoadTestError("Incorrect load test duration (must be a number > 0)");
 	}
-	var nbUsers = parseInt(document.getElementById("form-number-users").value);
+	let nbUsers = parseInt(document.getElementById("form-number-users").value);
 	if (isNaN(nbUsers) || nbUsers <= 0) {
 		return FormLoadTestError("Incorrect number of users (must be a number > 0)");
 	}
 	// computation
-	var nbIterations = parseInt(document.getElementById("form-number-iterations").value);
+	let nbIterations = parseInt(document.getElementById("form-number-iterations").value);
 	if (isNaN(nbIterations) || nbIterations <= 0) {
 		return FormComputationError("Incorrect number of iterations (must be a number > 0)");
 	}
-	var nbPointSecond = parseInt(document.getElementById("form-number-point-second").value);
+	let nbPointSecond = parseInt(document.getElementById("form-number-point-second").value);
 	if (isNaN(nbPointSecond) || nbPointSecond <= 0) {
 		return FormComputationError("Incorrect number of points per second (must be a number > 0)");
 	}
 	if (nbIterations < nbPointSecond * loadDuration){
 		FormWarning("The number of iteration for the Reimann sum is too low.<br />Should be a minimum of: " + (nbPointSecond * loadDuration));
 	}
-	var nbCoordonates = Math.ceil(loadDuration * nbPointSecond);
+	let nbCoordonates = Math.ceil(loadDuration * nbPointSecond);
 	
 	// parsing load function
-	var loadFunctions = [];
-	var totalPercent = 0;
-	for (var i=0; i<=loadFunctionNbRows; i++) {
+	let loadFunctions = [];
+	let totalPercent = 0;
+	for (let i=0; i<=loadFunctionNbRows; i++) {
 		if (document.getElementById("form-loadfunction-row" + i) == null) {
 			continue;
 		}
 		// hidding error
 		document.getElementById("form-loadfunction-error" + i + "-row").style.display = "none";
 
-		var loadFunction = null;
+		let loadFunction = null;
 		try {
 			eval("loadFunction =  " + document.getElementById("form-loadfunction-function" + i).value);
 			if (typeof loadFunction !== "function") {
@@ -84,7 +85,7 @@ function Run() {
 		} catch(e) {
 			return FormLoadFunctionError(i, "Could parse load function: " + e + ' (line: ' + e.lineNumber + ', col: ' + e.columnNumber + ')');
 		}
-		var userPercent = parseFloat(document.getElementById("form-loadfunction-user-percent" + i).value);
+		let userPercent = parseFloat(document.getElementById("form-loadfunction-user-percent" + i).value);
 
 		totalPercent += userPercent;
 		loadFunctions.push({percent: userPercent / 100, func: loadFunction});
@@ -93,11 +94,11 @@ function Run() {
 		return FormError("Load functions user percent total is not 100%.");
 	}
 	ChartsDesigner.DrawLoadFunctions('chart-loadfunctions', loadFunctions, nbPointSecond);
-	var userLoadFunction = new UserLoadFunction(loadFunctions);
+	let userLoadFunction = new UserLoadFunction(loadFunctions);
 
 	/* COMPUTING */
 	// calculating load
-	var loadCoordonates = null;
+	let loadCoordonates = null;
 	switch(document.getElementById("form-loadtest-distribution").value) {
 		case "gauss":
 			loadCoordonates = LoadCalculator.Gauss(nbUsers, userLoadFunction, loadDuration, nbCoordonates, nbIterations);
@@ -113,8 +114,8 @@ function Run() {
 	ChartsDesigner.DrawLoadOverTime('chart-load-time', loadCoordonates);
 
 	// orchestrators
-	var rowsClass = null;
-	var resultCoordonates = null;
+	let rowsClass = null;
+	let results = null;
 	switch(document.getElementById("form-orchestrator").value) {
 		// kubernetes until 1.11
 		case "kubernetes-1.11":
@@ -134,12 +135,12 @@ function Run() {
 			if (isNaN(horizontalPodAutoscalerDownscaleDelay) || horizontalPodAutoscalerDownscaleDelay <= 0) {
 				return FormOchestratorError("Incorrect horizontal pod autoscaler cownscale delay (must be a number greater than 0)");
 			}
-			var scaleUpPercent = AutoScaler.findScaleUpPercentKubernetes_1_11(loadCoordonates, instanceMaxLoad, instanceStartDuration, minNbInstances, horizontalPodAutoscalerSyncPeriod, horizontalPodAutoscalerTolerance, horizontalPodAutoscalerUpscaleDelay, horizontalPodAutoscalerDownscaleDelay);
+			var k8sConfig = new Kubernetes_1_11Config(horizontalPodAutoscalerSyncPeriod, horizontalPodAutoscalerTolerance, horizontalPodAutoscalerUpscaleDelay, horizontalPodAutoscalerDownscaleDelay);
+			var scaleUpPercent = Kubernetes_1_11.resolveScaleUpPercent(loadCoordonates, appConfig, k8sConfig);
+			results = Kubernetes_1_11.calculateStates(loadCoordonates, appConfig, k8sConfig, scaleUpPercent);
 
 			rowsClass = "results_kubernetes-1-11";
 			document.getElementById("results_kubernetes-1-11_targetCPUUtilizationPercentage").innerHTML = Math.floor(scaleUpPercent * 1000) / 10;
-
-			resultCoordonates = Kubernetes_1_11.instancesStatusOverTime(loadCoordonates, instanceMaxLoad, scaleUpPercent, instanceStartDuration, minNbInstances, horizontalPodAutoscalerSyncPeriod, horizontalPodAutoscalerTolerance, horizontalPodAutoscalerUpscaleDelay, horizontalPodAutoscalerDownscaleDelay);
 			break;
 
 		// kubernetes from 1.12
@@ -160,12 +161,12 @@ function Run() {
 			if (isNaN(horizontalPodAutoscalerCooldownWindow) || horizontalPodAutoscalerCooldownWindow <= 0) {
 				return FormOchestratorError("Incorrect horizontal pod autoscaler cooldown window (must be a number greater than 0)");
 			}
-			var scaleUpPercent = AutoScaler.findScaleUpPercentKubernetes_1_12(loadCoordonates, instanceMaxLoad, instanceStartDuration, minNbInstances, horizontalPodAutoscalerSyncPeriod, horizontalPodAutoscalerTolerance, horizontalPodAutoscalerInitialReadinessDelay, horizontalPodAutoscalerCooldownWindow);
+			var k8sConfig = new Kubernetes_1_12Config(horizontalPodAutoscalerSyncPeriod, horizontalPodAutoscalerTolerance, horizontalPodAutoscalerInitialReadinessDelay, horizontalPodAutoscalerCooldownWindow);
+			var scaleUpPercent = Kubernetes_1_12.resolveScaleUpPercent(loadCoordonates, appConfig, k8sConfig);
+			results = Kubernetes_1_12.calculateStates(loadCoordonates, appConfig, k8sConfig, scaleUpPercent);
 
 			rowsClass = "results_kubernetes-1-12";
 			document.getElementById("results_kubernetes-1-12_targetAverageValue").innerHTML = Math.floor(scaleUpPercent * 1000) / 10;
-
-			resultCoordonates = Kubernetes_1_12.instancesStatusOverTime(loadCoordonates, instanceMaxLoad, scaleUpPercent, instanceStartDuration, minNbInstances, horizontalPodAutoscalerSyncPeriod, horizontalPodAutoscalerTolerance, horizontalPodAutoscalerInitialReadinessDelay, horizontalPodAutoscalerCooldownWindow);
 			break;
 
 		default:
@@ -173,28 +174,18 @@ function Run() {
 	}
 	// displaying orchestrator results rows
 	if (rowsClass != null) {
-		var rows = document.getElementsByClassName(rowsClass);
-		for (var i=0; i<rows.length; i++) {
+		let rows = document.getElementsByClassName(rowsClass);
+		for (let i=0; i<rows.length; i++) {
 			rows[i].style.display = "block"; // back to default
 		}
 	}
 
 	// displaying metrics results
-	var maxNbInstances = 0;
-	var maxLoadInstance = 0;
-	for (var i=0; i<resultCoordonates.length; i++) {
-		if (maxNbInstances < resultCoordonates[i].instancesReady) {
-			maxNbInstances = resultCoordonates[i].instancesReady;
-		}
-		if (maxLoadInstance < resultCoordonates[i].instanceLoadPercent) {
-			maxLoadInstance = resultCoordonates[i].instanceLoadPercent;
-		}
-	}
-	document.getElementById("results_max-nb-instance").innerHTML = maxNbInstances;
-	document.getElementById("results_max-instance-load").innerHTML = (Math.round(maxLoadInstance * instanceMaxLoad * 1000) / 1000) + ' (' + (Math.round(maxLoadInstance * 1000) / 10) + '%)';
+	document.getElementById("results_max-nb-instance").innerHTML = results.maxInstances;
+	document.getElementById("results_max-instance-load").innerHTML = (Math.round(results.maxLoad * 1000) / 1000) + ' (' + (Math.round(results.maxLoad / appConfig.instanceMaxLoad * 1000) / 10) + '%)';
 
 	// drawing result graphs
-	ChartsDesigner.DrawResults('chart-results', resultCoordonates);
+	ChartsDesigner.DrawStates('chart-results', results.states);
 
 	// showing results
 	document.getElementById("loading-gif").style.display = "none";
@@ -210,10 +201,10 @@ function Run() {
 }
 
 /* FORM */
-var loadFunctionNbRows = 0;
+let loadFunctionNbRows = 0;
 function LoadFunctionAddRow() {
 	// searching for next row id
-	var rowId = 0;
+	let rowId = 0;
 	while(true) {
 		if (document.getElementById("form-loadfunction-row" + rowId) == null) {
 			if (loadFunctionNbRows < rowId) {
@@ -225,50 +216,50 @@ function LoadFunctionAddRow() {
 	}
 
 	// user percent
-	var userPercentSpan = document.createElement("span");
+	let userPercentSpan = document.createElement("span");
 	userPercentSpan.innerHTML = "Pourcentage of user: "
-	var userPercentInput = document.createElement("input");
+	let userPercentInput = document.createElement("input");
 	userPercentInput.type = "number";
 	userPercentInput.id = "form-loadfunction-user-percent" + rowId;
 	userPercentInput.min = "0.1";
 	userPercentInput.max = "100";
 	userPercentInput.step = "0.1";
 	userPercentInput.value = "10";
-	var userPercentPercentSpan = document.createElement("span");
+	let userPercentPercentSpan = document.createElement("span");
 	userPercentPercentSpan.innerHTML = "%"
-	var userPercent = document.createElement("div");
+	let userPercent = document.createElement("div");
 	userPercent.className = "col-lg-3";
 	userPercent.appendChild(userPercentSpan);
 	userPercent.appendChild(userPercentInput);
 	userPercent.appendChild(userPercentPercentSpan);
 
 	// function label
-	var functionSpan = document.createElement("span");
+	let functionSpan = document.createElement("span");
 	functionSpan.innerHTML = "JavaScript function:"
-	var functionSpanCol = document.createElement("div");
+	let functionSpanCol = document.createElement("div");
 	functionSpanCol.className = "col-lg-2";
 	functionSpanCol.appendChild(functionSpan);
 	// function textarea
-	var functionTextarea = document.createElement("textarea");
+	let functionTextarea = document.createElement("textarea");
 	functionTextarea.className = "form-control";
 	functionTextarea.id = "form-loadfunction-function" + rowId;
 	functionTextarea.innerHTML = "function(time) {return 0;}";
-	var functionCol = document.createElement("div");
+	let functionCol = document.createElement("div");
 	functionCol.className = "col-lg-6";
 	functionCol.appendChild(functionTextarea);
 
 	// buttons
-	var buttonRemove = document.createElement("input");
+	let buttonRemove = document.createElement("input");
 	buttonRemove.type = "button";
 	buttonRemove.className = "btn btn-secondary";
 	buttonRemove.setAttribute("onclick", "LoadFunctionRemoveRow(" + rowId + ");");
 	buttonRemove.value = "-";
-	var buttonsCol = document.createElement("div");
+	let buttonsCol = document.createElement("div");
 	buttonsCol.className = "col-lg-1 text-center";
 	buttonsCol.appendChild(buttonRemove);
 
 	// row
-	var row = document.createElement("div");
+	let row = document.createElement("div");
 	row.className = "row loadfunction";
 	row.id = "form-loadfunction-row" + rowId;
 	row.appendChild(userPercent);
@@ -277,13 +268,13 @@ function LoadFunctionAddRow() {
 	row.appendChild(buttonsCol);
 
 	// error row
-	var errorSpan = document.createElement("span");
+	let errorSpan = document.createElement("span");
 	errorSpan.id = "form-loadfunction-error" + rowId;
 	errorSpan.className = "error";
-	var errorDiv = document.createElement("div");
+	let errorDiv = document.createElement("div");
 	errorDiv.className = "col-lg-12";
 	errorDiv.appendChild(errorSpan)
-	var errorRow = document.createElement("div");
+	let errorRow = document.createElement("div");
 	errorRow.id = "form-loadfunction-error" + rowId + "-row";
 	errorRow.className = "row error-row";
 	errorRow.appendChild(errorDiv);
@@ -346,14 +337,14 @@ function FormError(error) {
 function SelectOrchestrator(selectElement) {
 	// undisplay every rows
 	["kubernetes-1-11", "kubernetes-1-12"].forEach(element => {
-		var rows = document.getElementsByClassName(element);
-		for (var i=0; i<rows.length; i++) {
+		let rows = document.getElementsByClassName(element);
+		for (let i=0; i<rows.length; i++) {
 			rows[i].style.display = "none";
 		}
 	});
 
 	// selecting rows to display
-	var rowsClass = null;
+	let rowsClass = null;
 	switch (selectElement.value) {
 		case "kubernetes-1.11": rowsClass = "kubernetes-1-11";
 			break;
@@ -364,8 +355,8 @@ function SelectOrchestrator(selectElement) {
 	}
 
 	// displaying rows
-	var rows = document.getElementsByClassName(rowsClass);
-	for (var i=0; i<rows.length; i++) {
+	let rows = document.getElementsByClassName(rowsClass);
+	for (let i=0; i<rows.length; i++) {
 		rows[i].style.display = "flex"; // back to default
 	}
 }
@@ -378,15 +369,15 @@ function ResetForm() {
 
 /* COMMON */
 function RemoveHTML(id) {
-	var elem = document.getElementById(id);
+	let elem = document.getElementById(id);
 	elem.parentNode.removeChild(elem);
 	return false;
 }
 
 function RandomColor() {
-	var letters = '0123456789ABCDEF';
-	var color = '#';
-	for (var i = 0; i < 6; i++) {
+	let letters = '0123456789ABCDEF';
+	let color = '#';
+	for (let i = 0; i < 6; i++) {
 		color += letters[Math.floor(Math.random() * 16)];
 	}
 	return color;

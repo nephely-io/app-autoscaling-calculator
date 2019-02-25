@@ -131,24 +131,24 @@ class ChartsDesigner {
 		});
 	}
 	
-	static DrawResults(canvasId, results) {
+	static DrawStates(canvasId, states) {
 		// number of instances
-		var instancesReadyData = [{"x": results[0].time, "y": results[0].instancesReady}]
-		var instancesTotalData = [{"x": results[0].time, "y": results[0].instancesWaiting.length}]
-		for (var i=1; i<results.length; i++){
-			if ((instancesTotalData[instancesTotalData.length-1].y != results[i].instancesWaiting.length) || (instancesReadyData[instancesReadyData.length-1].y != results[i].instancesReady)) {
-				if (results[i-1].time != instancesTotalData[instancesTotalData.length-1].x) { // adding previous point to have stair curve
-					instancesTotalData.push({"x": results[i-1].time, "y": results[i-1].instancesWaiting.length});
-					instancesReadyData.push({"x": results[i-1].time, "y": results[i-1].instancesReady});
+		var instancesReadyData = [{"x": states[0].time, "y": states[0].instancesReady}]
+		var instancesTotalData = [{"x": states[0].time, "y": states[0].instancesWaiting.length}]
+		for (var i=1; i<states.length; i++){
+			if ((instancesTotalData[instancesTotalData.length-1].y != states[i].instancesWaiting.length) || (instancesReadyData[instancesReadyData.length-1].y != states[i].instancesReady)) {
+				if (states[i-1].time != instancesTotalData[instancesTotalData.length-1].x) { // adding previous point to have stair curve
+					instancesTotalData.push({"x": states[i-1].time, "y": states[i-1].instancesWaiting.length});
+					instancesReadyData.push({"x": states[i-1].time, "y": states[i-1].instancesReady});
 				}
-				instancesTotalData.push({"x": results[i].time, "y": results[i].instancesWaiting.length});
-				instancesReadyData.push({"x": results[i].time, "y": results[i].instancesReady});
+				instancesTotalData.push({"x": states[i].time, "y": states[i].instancesWaiting.length});
+				instancesReadyData.push({"x": states[i].time, "y": states[i].instancesReady});
 			}
 		}
 		// adding last point
-		if (instancesReadyData[instancesReadyData.length-1].x != results[results.length-1].time) {
-			instancesTotalData.push({"x": results[results.length-1].time, "y": results[results.length-1].instancesWaiting.length});
-			instancesReadyData.push({"x": results[results.length-1].time, "y": results[results.length-1].instancesReady});
+		if (instancesReadyData[instancesReadyData.length-1].x != states[states.length-1].time) {
+			instancesTotalData.push({"x": states[states.length-1].time, "y": states[states.length-1].instancesWaiting.length});
+			instancesReadyData.push({"x": states[states.length-1].time, "y": states[states.length-1].instancesReady});
 		}
 
 		// clearing canvas
@@ -158,7 +158,7 @@ class ChartsDesigner {
 		new Chart(document.getElementById(canvasId).getContext('2d'), {
 			type: 'line',
 			data: {
-				labels: results.map(e => e.time),
+				labels: states.map(e => e.time),
 				datasets: [{
 					type: 'line',
 					label: 'Instances ready',
@@ -190,7 +190,7 @@ class ChartsDesigner {
 					yAxisID: 'y-percent',
 					stack: 'loadInstance',
 					fill: false,
-					data: results.map(e => Math.round(e.instanceLoadPercent * 1000) / 10)
+					data: states.map(e => Math.round(e.instanceLoadPercent * 1000) / 10)
 				}]
 			},
 			options: {
