@@ -22,7 +22,7 @@ function OnLoad() {
 
 function Run() {
 	// hiding results & displaying loading gif
-	let errorDivIds = ["results", "form-warning", "form-error", "form-app-error-row", "form-loadtest-error-row", "form-orchestrator-error-row", "form-computation-error-row"];
+	let errorDivIds = ["results", "form-warning", "form-error", "form-app-error-row", "form-loadfunction-error-row", "form-loadtest-error-row", "form-orchestrator-error-row", "form-computation-error-row"];
 	for (let i=0; i<errorDivIds.length; i++) {
 		document.getElementById(errorDivIds[i]).style.display = "none";
 	}
@@ -54,7 +54,7 @@ function Run() {
 	// load function
 	let loadFunctionDuration = parseInt(document.getElementById("form-loadfunction-duration").value);
 	if (isNaN(loadFunctionDuration) || loadFunctionDuration <= 0) {
-		return FormLoadFunctionError("Incorrect duration of the load function (must be a number > 0)");
+		return FormLoadTestError(null, "Incorrect duration of the load function (must be a number > 0)");
 	}
 	// load test
 	let loadDuration = parseInt(document.getElementById("form-loadtest-duration").value);
@@ -113,6 +113,7 @@ function Run() {
 	let loadCoordonates = null;
 	switch(document.getElementById("form-loadtest-distribution").value) {
 		case "gauss":
+			nbUsers = Math.ceil(nbUsers * 1.003);
 			loadCoordonates = LoadCalculator.Gauss(nbUsers, userLoadFunction, Math.ceil(loadDuration * 3/2) + loadFunctionDuration, nbPointSecond, nbIterations);
 			break;
 		case "constant":
@@ -239,6 +240,40 @@ function Run() {
 	})(jQuery);
 }
 
+/* TEST DATA */
+function runTest() {
+	// generalities
+	document.getElementById("form-instance-max-load").value = 1;
+	document.getElementById("form-instance-start-duration").value = 15;
+	document.getElementById("form-min-number-instances").value = 3;
+	document.getElementById("form-loadtest-duration").value = 800;
+	document.getElementById("form-number-users").value = 10000;
+	document.getElementById("form-number-iterations").value = 100000;
+	document.getElementById("form-loadtest-distribution").getElementsByTagName('option')[0].selected = 'selected';
+
+	// load function
+	for (let i=0; i<loadFunctionNbRows; i++) {
+		if (document.getElementById("form-loadfunction-row" + i) == null) {
+			continue;
+		}
+		LoadFunctionRemoveRow(i);
+	}
+	loadFunctionNbRows = 0;
+	document.getElementById("form-loadfunction-function0").value = "function(time) { if(time>=0 && time<=0.8) { return 0.08; } else if (time>=2 && time<=6) {return 0.1} return 0;}";
+	document.getElementById("form-loadfunction-user-percent0").value = 100;
+	document.getElementById("form-loadfunction-duration").value = 10;
+
+	// orchestrator
+	document.getElementById('form-orchestrator').getElementsByTagName('option')[2].selected = 'selected';
+	SelectOrchestrator(document.getElementById('form-orchestrator'));
+	document.getElementById("form-k8s-1-12-hpasp").value = 15;
+	document.getElementById("form-k8s-1-12-hpat").value = 0.1;
+	document.getElementById("form-k8s-1-12-hpaird").value = 30;
+	document.getElementById("form-k8s-1-12-hpadcw").value = 300;
+
+	Run();
+}
+
 /* FORM */
 let loadFunctionNbRows = 0;
 function LoadFunctionAddRow() {
@@ -334,8 +369,13 @@ function FormApplicationError(error) {
 }
 
 function FormLoadFunctionError(rowIndex, error) {
-	AbstractFormError("form-loadfunction-error" + rowIndex, error);
-	return FormError("Error with a load function (see above)");
+	if (rowIndex == null) {
+		AbstractFormError("form-loadfunction-error", error);
+		return FormError("Error in the load function section (see above)");
+	} else {
+		AbstractFormError("form-loadfunction-error" + rowIndex, error);
+		return FormError("Error with a load function (see above)");
+	}
 }
 
 function FormLoadTestError(error) {
@@ -354,6 +394,7 @@ function FormComputationError(error) {
 }
 
 function AbstractFormError(id, error) {
+	console.log(id);w
 	document.getElementById(id).innerHTML = "<i class=\"fas fa-bug warning\"></i> &darr; " + error;
 	document.getElementById(id + "-row").style.display = "flex";
 	return false;
