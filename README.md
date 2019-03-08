@@ -12,4 +12,4 @@ This tools calculates some key figures to configure you containerized applicatio
 * Kubernetes >=1.12
 * Mesosphere Marathon
 
-You can find more information about the procedure used here reading this [Medium article](https://medium.com/@kanshi/how-to-mathematically-configure-your-application-and-orchestrator-for-auto-scaling-d15c78c0b12a).
+You can find more information about the procedure used here reading this [Medium article](https://medium.com/@kanshi/d15c78c0b12a).
