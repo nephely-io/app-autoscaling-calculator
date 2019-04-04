@@ -1,3 +1,9 @@
+This sample is published as part of [the corresponding article on the Toptal Engineering Blog](), which contains more information about the procedure used here.
+
+Visit https://www.toptal.com/blog and subscribe to our newsletter to read great posts!
+
+* * *
+
 # Application auto-scaling calculator
 
 :warning: This tool is working but is still in beta version as it has not been intensively tested, thus may contain some bugs.
@@ -11,5 +17,3 @@ This tools calculates some key figures to configure you containerized applicatio
 * Kubernetes <=1.11
 * Kubernetes >=1.12
 * Mesosphere Marathon
-
-You can find more information about the procedure used here reading this [Medium article](https://medium.com/@kanshi/d15c78c0b12a).
