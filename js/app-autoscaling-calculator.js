@@ -216,7 +216,7 @@ function Run() {
 
 	// displaying metrics results
 	document.getElementById("results_max-nb-instance").innerHTML = results.maxInstances;
-	document.getElementById("results_max-instance-load").innerHTML = (Math.round(results.maxLoad * 1000) / 1000) + ' (' + (Math.round(results.maxLoad / appConfig.instanceMaxLoad * 1000) / 10) + '%)';
+	document.getElementById("results_max-instance-load").innerHTML = (Math.round(results.maxLoad * appConfig.instanceMaxLoad * 1000) / 1000) + ' (' + (Math.round(results.maxLoad * 1000) / 10) + '%)';
 
 	// drawing result graphs
 	ChartsDesigner.DrawStates('chart-results', results.states);
